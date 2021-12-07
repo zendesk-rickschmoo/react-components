@@ -45,7 +45,7 @@ export interface IDropdownProps {
     stateAndHelpers: ControllerStateAndHelpers<any>
   ) => void;
   /**
-   * Handles input value change
+   * Handles input value change with IME support
    *
    * @param {string} inputValue Value of the input element
    * @param {Object} stateAndHelpers [Downshift state and helpers](https://github.com/downshift-js/downshift#oninputvaluechange)
