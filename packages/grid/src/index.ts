@@ -9,9 +9,15 @@ export { Col } from './elements/Col';
 export { Grid } from './elements/Grid';
 export { Row } from './elements/Row';
 
+export { PaneProvider } from './elements/splitter/PaneProvider';
+export { Pane } from './elements/splitter/Pane';
+
 export type { IColProps } from './elements/Col';
 export type { IGridProps } from './elements/Grid';
 export type { IRowProps } from './elements/Row';
+
+export type { IPaneProvider } from './elements/splitter/PaneProvider';
+export type { IPane } from './elements/splitter/Pane';
 
 export {
   ARRAY_ALIGN_ITEMS,
