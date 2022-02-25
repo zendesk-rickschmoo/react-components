@@ -1,0 +1,28 @@
+import { Meta, ArgsTable, Canvas, Story } from '@storybook/addon-docs';
+import {
+  PaneProvider
+} from '@zendeskgarden/react-grid';
+import { SplitterStory } from './stories/SplitterStory';
+
+<Meta title="Packages/Grid/Splitter" component={PaneProvider} />
+
+# API
+
+<ArgsTable />
+
+# Demo
+
+<Canvas>
+  <Story
+    name="Splitter"
+    parameters={{
+      design: {
+        allowFullscreen: true,
+        type: 'figma',
+        url: ''
+      }
+    }}
+  >
+    {args => <SplitterStory {...args} />}
+  </Story>
+</Canvas>
