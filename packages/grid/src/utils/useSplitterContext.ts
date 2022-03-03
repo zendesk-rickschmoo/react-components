@@ -8,10 +8,14 @@
 import { createContext, useContext } from 'react';
 
 interface ISplitterContext {
-  layoutValues?: any;
+  layoutState: any;
+  setLayoutValue: (id: string, value: number) => void;
 }
 
-export const SplitterContext = createContext<ISplitterContext>({ layoutValues: {} });
+export const SplitterContext = createContext<ISplitterContext>({
+  setLayoutValue: () => undefined,
+  layoutState: {}
+});
 
 /**
  * Retrieve Splitter component context

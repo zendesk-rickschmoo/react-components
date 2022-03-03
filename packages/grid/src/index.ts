@@ -11,6 +11,7 @@ export { Row } from './elements/Row';
 
 export { PaneProvider } from './elements/splitter/PaneProvider';
 export { Pane } from './elements/splitter/Pane';
+export { Splitter } from './elements/splitter/Splitter';
 
 export type { IColProps } from './elements/Col';
 export type { IGridProps } from './elements/Grid';
@@ -18,6 +19,7 @@ export type { IRowProps } from './elements/Row';
 
 export type { IPaneProvider } from './elements/splitter/PaneProvider';
 export type { IPane } from './elements/splitter/Pane';
+export type { ISplitterProps } from './elements/splitter/Splitter';
 
 export {
   ARRAY_ALIGN_ITEMS,

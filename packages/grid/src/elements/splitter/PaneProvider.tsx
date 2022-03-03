@@ -14,7 +14,7 @@ export interface IPaneProvider {
 }
 
 export const PaneProvider = ({ children }: IPaneProvider) => {
-  const [layoutValues, setLayoutValues] = useState({});
+  const [layoutState, setLayoutValues] = useState<Record<string, number>>({});
 
   const setLayoutValue = useCallback(
     (id: string, value: number) => {
@@ -26,18 +26,25 @@ export const PaneProvider = ({ children }: IPaneProvider) => {
     [setLayoutValues]
   );
 
+  const getLayoutValue = useCallback(
+    (id: string) => {
+      return layoutState[id];
+    },
+    [layoutState]
+  );
+
   const splitterContext = useMemo(
     () => ({
-      layoutValues,
+      layoutState,
       setLayoutValue
     }),
-    [layoutValues, setLayoutValue]
+    [layoutState, setLayoutValue]
   );
 
   return (
     <SplitterContext.Provider value={splitterContext}>
       {children({
-        layoutValues
+        getLayoutValue
       })}
     </SplitterContext.Provider>
   );
