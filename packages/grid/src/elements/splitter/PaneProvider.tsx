@@ -5,7 +5,7 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SplitterContext } from '../../utils/useSplitterContext';
 
@@ -16,31 +16,35 @@ export interface IPaneProvider {
 export const PaneProvider = ({ children }: IPaneProvider) => {
   const [layoutValues, setLayoutValues] = useState({});
 
-  const setLayoutValue = useCallback((id: string, value: number) => {
-    setLayoutValues((state) => ({
-      ...state,
-      [id]: value
-    }));
-  }, [setLayoutValues]);
+  const setLayoutValue = useCallback(
+    (id: string, value: number) => {
+      setLayoutValues(state => ({
+        ...state,
+        [id]: value
+      }));
+    },
+    [setLayoutValues]
+  );
 
-  const splitterContext = useMemo(() => ({
-    layoutValues,
-    setLayoutValue,
-  }), [layoutValues, setLayoutValue])
+  const splitterContext = useMemo(
+    () => ({
+      layoutValues,
+      setLayoutValue
+    }),
+    [layoutValues, setLayoutValue]
+  );
 
   return (
-    <SplitterContext.Provider
-      value={splitterContext}
-    >
+    <SplitterContext.Provider value={splitterContext}>
       {children({
-        layoutValues,
+        layoutValues
       })}
     </SplitterContext.Provider>
   );
-}
+};
 
 PaneProvider.displayName = 'PaneProvider';
 
 PaneProvider.propTypes = {
-  children: PropTypes.any,
+  children: PropTypes.any
 };

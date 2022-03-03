@@ -5,19 +5,19 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
- import React, {useContext} from "react";
- import { SplitterContext } from "../../utils/useSplitterContext";
+import React, { useContext } from 'react';
+import { SplitterContext } from '../../utils/useSplitterContext';
 
 export const Splitter = ({ layoutId, min, max, ...props }) => {
   const context = useContext(SplitterContext);
   const { getSeparatorProps } = useSplitter({
-    type: "variable",
-    orientation: "horizontal",
-    position: "trails",
+    type: 'variable',
+    orientation: 'horizontal',
+    position: 'trails',
     min,
     max,
     rtl: false,
-    onChange: (valueNow) => {
+    onChange: valueNow => {
       context.setLayoutState(state => ({
         ...state.rows,
         [layoutId]: valueNow
