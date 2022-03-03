@@ -5,8 +5,8 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React from "react";
-import { StyledPane } from "../../styled/splitter/StyledPane";
+import React from 'react';
+import { StyledPane } from '../../styled/splitter/StyledPane';
 
 export interface IPane {
   children?: any;
@@ -14,4 +14,4 @@ export interface IPane {
 
 export const Pane = ({ children }: IPane) => {
   return <StyledPane>{children}</StyledPane>;
-}
+};
