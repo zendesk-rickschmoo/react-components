@@ -5,38 +5,63 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { useContext } from 'react';
+import React, { useContext, HTMLProps } from 'react';
+import {
+  useSplitter,
+  SplitterOrientation,
+  SplitterType,
+  SplitterPosition
+} from '@zendeskgarden/container-splitter';
 import { SplitterContext } from '../../utils/useSplitterContext';
+import { ORIENTATION } from '../../utils/types';
 
-export const Splitter = ({ layoutId, min, max, ...props }) => {
+import { StyledPaneItem } from '../../styled/splitter/StyledPaneItem';
+import { StyledSeparatorContainer } from '../../styled/splitter/StyledSeparatorContainer';
+import { StyledSeparator } from '../../styled/splitter/StyledSeparator';
+export interface ISplitterProps extends HTMLProps<any> {
+  key: string;
+  min: number;
+  max: number;
+  orientation: ORIENTATION;
+}
+
+const orientationToPosition = {
+  start: SplitterPosition.LEADS,
+  end: SplitterPosition.TRAILS,
+  top: SplitterPosition.LEADS,
+  bottom: SplitterPosition.TRAILS
+};
+
+const gridOrientationToOrientation = {
+  start: SplitterOrientation.VERTICAL,
+  end: SplitterOrientation.VERTICAL,
+  top: SplitterOrientation.HORIZONTAL,
+  bottom: SplitterOrientation.HORIZONTAL
+};
+
+export const Splitter = ({ key, min, max, orientation, ...props }: ISplitterProps) => {
   const context = useContext(SplitterContext);
   const { getSeparatorProps } = useSplitter({
-    type: 'variable',
-    orientation: 'horizontal',
-    position: 'trails',
+    type: SplitterType.VARIABLE,
+    orientation: gridOrientationToOrientation[orientation],
+    position: orientationToPosition[orientation],
     min,
     max,
     rtl: false,
     onChange: valueNow => {
-      context.setLayoutState(state => ({
-        ...state.rows,
-        [layoutId]: valueNow
-      }));
+      context.setLayoutValue(key, valueNow);
     },
-    valueNow: context.layoutState[layoutId],
+    valueNow: context.layoutState[key],
     environment: window
   });
 
+  const isHorizontal = gridOrientationToOrientation[orientation] === SplitterOrientation.HORIZONTAL;
+
   return (
-    <PaneGrid.Bottom>
-      <StyledSeparatorContainer
-        orientation="horizontal"
-        position="trails"
-        {...getSeparatorProps()}
-        {...props}
-      >
-        <StyledSeparator orientation="horizontal" />
+    <StyledPaneItem gridOrientation={orientation}>
+      <StyledSeparatorContainer isHorizontal={isHorizontal} {...getSeparatorProps()} {...props}>
+        <StyledSeparator isHorizontal={isHorizontal} />
       </StyledSeparatorContainer>
-    </PaneGrid.Bottom>
+    </StyledPaneItem>
   );
 };

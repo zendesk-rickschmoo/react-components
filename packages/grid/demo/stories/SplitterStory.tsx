@@ -7,12 +7,18 @@
 
 import React from 'react';
 import { Story } from '@storybook/react';
-import { PaneProvider, Pane } from '@zendeskgarden/react-grid';
+import { PaneProvider, Pane, Splitter } from '@zendeskgarden/react-grid';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IArgs {}
 
 // eslint-disable-next-line no-empty-pattern
 export const SplitterStory: Story<IArgs> = ({}) => (
-  <PaneProvider>{({ layoutValues }) => <Pane />}</PaneProvider>
+  <PaneProvider>
+    {() => (
+      <Pane>
+        <Splitter orientation="end" min={0} max={100} />
+      </Pane>
+    )}
+  </PaneProvider>
 );
