@@ -12,10 +12,10 @@ import { ORIENTATION } from '../../utils/types';
 const COMPONENT_ID = 'splitter.pane_item';
 
 interface IStyledPaneItemProps {
-  gridOrientation: ORIENTATION;
+  gridOrientation?: ORIENTATION;
 }
 
-const getGridPosition = (gridOrientation: ORIENTATION) => {
+const getGridPosition = (gridOrientation?: ORIENTATION) => {
   switch (gridOrientation) {
     case 'top':
       return ` 
@@ -33,10 +33,14 @@ const getGridPosition = (gridOrientation: ORIENTATION) => {
         grid-row: 1 / -1;
       `;
     case 'end':
+      return `
+        grid-column: 3;
+        grid-row: 1 / -1;
+      `;
     default:
       return `
-        grid-column: 1;
-        grid-row: 1 / -1;
+        grid-column: 2;
+        grid-row: 2;
       `;
   }
 };

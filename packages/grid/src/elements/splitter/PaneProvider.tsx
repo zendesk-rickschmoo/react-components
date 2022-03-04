@@ -10,11 +10,22 @@ import PropTypes from 'prop-types';
 import { SplitterContext } from '../../utils/useSplitterContext';
 
 export interface IPaneProvider {
+  totalPanesWidth: number;
+  totalPanesHeight: number;
+  defaultLayoutValues?: Record<string, number>;
+  layoutValues?: Record<string, number>;
+  onChange?: (layoutValues: Record<string, number>) => void;
   children?: any;
 }
 
-export const PaneProvider = ({ children }: IPaneProvider) => {
-  const [layoutState, setLayoutValues] = useState<Record<string, number>>({});
+export interface IPaneProviderReturnProps {
+  getLayoutValue: (key: string) => number;
+}
+
+export const PaneProvider = ({ defaultLayoutValues, children }: IPaneProvider) => {
+  const [layoutState, setLayoutValues] = useState<Record<string, number>>(
+    defaultLayoutValues || {}
+  );
 
   const setLayoutValue = useCallback(
     (id: string, value: number) => {
@@ -27,8 +38,8 @@ export const PaneProvider = ({ children }: IPaneProvider) => {
   );
 
   const getLayoutValue = useCallback(
-    (id: string) => {
-      return layoutState[id];
+    (key: string) => {
+      return layoutState[key];
     },
     [layoutState]
   );

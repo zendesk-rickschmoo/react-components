@@ -43,6 +43,7 @@ export const StyledSeparatorContainer = styled.div.attrs<IStyledSeparatorContain
   ${getOrientationStyles}
   width: ${props => (props.isHorizontal === false ? `${props.theme.space.base * 6}px` : '100%')};
   height: ${props => (props.isHorizontal ? `${props.theme.space.base * 6}px` : '100%')};
+  margin-left: -${props => props.theme.space.base * 3}px;
 
   &:hover > ${StyledSeparator} {
     box-shadow: 0 0 0 ${props => props.theme.space.base / 4}px
