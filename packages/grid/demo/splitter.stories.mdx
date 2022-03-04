@@ -1,7 +1,5 @@
 import { Meta, ArgsTable, Canvas, Story } from '@storybook/addon-docs';
-import {
-  PaneProvider
-} from '@zendeskgarden/react-grid';
+import { PaneProvider } from '@zendeskgarden/react-grid';
 import { SplitterStory } from './stories/SplitterStory';
 
 <Meta title="Packages/Grid/Splitter" component={PaneProvider} />
@@ -15,6 +13,7 @@ import { SplitterStory } from './stories/SplitterStory';
 <Canvas>
   <Story
     name="Splitter"
+    args={{ rows: 2, cols: 4 }}
     parameters={{
       design: {
         allowFullscreen: true,

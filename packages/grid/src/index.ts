@@ -11,11 +11,9 @@ export { Row } from './elements/Row';
 
 export { PaneProvider } from './elements/splitter/PaneProvider';
 export { Pane } from './elements/splitter/Pane';
-export { Splitter } from './elements/splitter/Splitter';
 
 export type { IPaneProvider } from './elements/splitter/PaneProvider';
 export type { IPane } from './elements/splitter/Pane';
-export type { ISplitterProps } from './elements/splitter/Splitter';
 
 export {
   ALIGN_ITEMS as ARRAY_ALIGN_ITEMS,
