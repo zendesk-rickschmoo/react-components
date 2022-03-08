@@ -10,11 +10,19 @@ import { createContext, useContext } from 'react';
 interface ISplitterContext {
   layoutState: any;
   setLayoutValue: (id: string, value: number) => void;
+  totalPanesHeight: number,
+  totalPanesWidth: number,
+  totalHeightFractions: number,
+  totalWidthFractions: number,
 }
 
 export const SplitterContext = createContext<ISplitterContext>({
   setLayoutValue: () => undefined,
-  layoutState: {}
+  layoutState: {},
+  totalPanesHeight: 1,
+  totalPanesWidth: 1,
+  totalHeightFractions: 1,
+  totalWidthFractions: 1,
 });
 
 /**

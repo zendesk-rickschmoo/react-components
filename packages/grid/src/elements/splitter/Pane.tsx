@@ -14,7 +14,7 @@ export interface IPane {
   children?: any;
 }
 
-export const Pane = ({ children }: IPane) => {
+const PaneComponent = ({ children }: IPane) => {
   const [paneId, setPaneId] = useState<string>();
 
   const paneContext = useMemo(
@@ -30,6 +30,14 @@ export const Pane = ({ children }: IPane) => {
       <StyledPane id={paneId}>{children}</StyledPane>
     </PaneContext.Provider>
   );
+};
+
+/**
+ * @extends HTMLAttributes<HTMLDivElement>
+ */
+ export const Pane = PaneComponent as typeof PaneComponent & {
+  Content: typeof StyledPaneItem;
+  Splitter: typeof Splitter;
 };
 
 Pane.Content = StyledPaneItem;
