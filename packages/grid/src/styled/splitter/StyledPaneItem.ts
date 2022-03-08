@@ -12,11 +12,11 @@ import { ORIENTATION } from '../../utils/types';
 const COMPONENT_ID = 'splitter.pane_item';
 
 interface IStyledPaneItemProps {
-  gridOrientation?: ORIENTATION;
+  paneOrientation?: ORIENTATION;
 }
 
-const getGridPosition = (gridOrientation?: ORIENTATION) => {
-  switch (gridOrientation) {
+const getGridPosition = (paneOrientation?: ORIENTATION) => {
+  switch (paneOrientation) {
     case 'top':
       return ` 
         grid-column: 1 / -1;
@@ -49,7 +49,7 @@ export const StyledPaneItem = styled.div.attrs<IStyledPaneItemProps>({
   'data-garden-id': COMPONENT_ID,
   'data-garden-version': PACKAGE_VERSION
 })<IStyledPaneItemProps>`
-  ${props => getGridPosition(props.gridOrientation)}
+  ${props => getGridPosition(props.paneOrientation)}
   position: relative;
   ${props => retrieveComponentStyles(COMPONENT_ID, props)};
 `;

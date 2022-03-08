@@ -12,6 +12,8 @@ import { SplitterContext } from '../../utils/useSplitterContext';
 export interface IPaneProvider {
   totalPanesWidth: number;
   totalPanesHeight: number;
+  totalHeightFractions: number;
+  totalWidthFractions: number;
   defaultLayoutValues?: Record<string, number>;
   layoutValues?: Record<string, number>;
   onChange?: (layoutValues: Record<string, number>) => void;
@@ -19,13 +21,35 @@ export interface IPaneProvider {
 }
 
 export interface IPaneProviderReturnProps {
-  getLayoutValue: (key: string) => number;
+  getLayoutValue: (key: string, dimension: 'height' | 'width', units?: "px" | "fr") => number;
 }
 
-export const PaneProvider = ({ defaultLayoutValues, children }: IPaneProvider) => {
+export const getFr = (pixels: number, totalFractions: number, totalDimension: number) => {
+  const pixelsPerFraction = totalDimension / totalFractions;
+
+  return pixels / pixelsPerFraction;
+}
+
+export const getPx = (frs: number, totalFractions: number, totalDimension: number) => {
+  const pixelsPerFraction = totalDimension / totalFractions;
+
+  return frs * pixelsPerFraction;
+}
+
+export const PaneProvider = ({ totalPanesWidth, totalHeightFractions, totalPanesHeight, totalWidthFractions, defaultLayoutValues, children }: IPaneProvider) => {
   const [layoutState, setLayoutValues] = useState<Record<string, number>>(
     defaultLayoutValues || {}
   );
+
+  const dimensionToTotalPanes = useMemo(() => ({
+    height: totalPanesHeight,
+    width: totalPanesWidth,
+  }), [totalPanesHeight, totalPanesWidth])
+
+  const dimensionToTotalFractions = useMemo(() => ({
+    height: totalHeightFractions,
+    width: totalWidthFractions,
+  }), [totalHeightFractions, totalWidthFractions])
 
   const setLayoutValue = useCallback(
     (id: string, value: number) => {
@@ -38,24 +62,35 @@ export const PaneProvider = ({ defaultLayoutValues, children }: IPaneProvider) =
   );
 
   const getLayoutValue = useCallback(
-    (key: string) => {
-      return layoutState[key];
+    (key: string, dimension: 'height' | 'width', units?: "px" | "fr") => {
+      switch (units) {
+        case "px":
+          return getPx(layoutState[key], dimensionToTotalFractions[dimension], dimensionToTotalPanes[dimension]);
+        case "fr":
+        default:
+          return layoutState[key];
+      }
     },
-    [layoutState]
+    [layoutState, dimensionToTotalPanes, dimensionToTotalFractions]
   );
 
   const splitterContext = useMemo(
     () => ({
       layoutState,
-      setLayoutValue
+      setLayoutValue,
+      getLayoutValue,
+      totalPanesHeight,
+      totalPanesWidth,
+      totalWidthFractions,
+      totalHeightFractions,
     }),
-    [layoutState, setLayoutValue]
+    [layoutState, setLayoutValue, getLayoutValue, totalPanesHeight, totalPanesWidth, totalWidthFractions, totalHeightFractions]
   );
 
   return (
     <SplitterContext.Provider value={splitterContext}>
       {children({
-        getLayoutValue
+        getLayoutValue,
       })}
     </SplitterContext.Provider>
   );
