@@ -41,4 +41,8 @@ export const ARRAY_SPACE: SPACE[] = [false, 'xxs', 'xs', 'sm', 'md', 'lg', 'xl',
 
 export type WRAP = 'nowrap' | 'wrap' | 'wrap-reverse';
 export const ARRAY_WRAP: WRAP[] = ['nowrap', 'wrap', 'wrap-reverse'];
+
 export type ORIENTATION = 'top' | 'bottom' | 'start' | 'end';
+export type LAYOUT_STATE = { rows: [ [string, number]? ], columns: [ [string, number]? ] };
+export type DIMENSIONS = 'rows' | 'columns';
+export type UNITS = 'px' | 'fr';

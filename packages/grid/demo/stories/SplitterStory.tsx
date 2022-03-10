@@ -26,19 +26,17 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
     <PaneProvider
       totalPanesWidth={width}
       totalPanesHeight={height}
-      totalHeightFractions={rows}
-      totalWidthFractions={cols}
       defaultLayoutValues={{
-        ...makeArray(cols).reduce((prev: any, value) => {
-          prev[`column-${value % cols}`] = 1;
+        columns: makeArray(cols).reduce((prev: any, value) => {
+            prev.push([value % cols, 1]);
+
+            return prev;
+          }, []),
+        rows: makeArray(rows).reduce((prev: any, value) => {
+          prev.push([value % rows, 1]);
 
           return prev;
-        }, {}),
-        ...makeArray(rows).reduce((prev: any, value) => {
-          prev[`row-${value % rows}`] = 1;
-
-          return prev;
-        }, {})
+        }, [])
       }}
     >
       {({ getLayoutValue }: IPaneProviderReturnProps) => {
@@ -51,12 +49,12 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
               display: 'grid',
               width: '100%',
               height: '800px',
-              gridTemplateRows: makeArray(rows)
-                .map(value => `${getLayoutValue(`row-${value % rows}`, 'height')}fr`)
-                .join(' '),
-              gridTemplateColumns: makeArray(cols)
-                .map(value => `${getLayoutValue(`column-${value % cols}`, 'width')}fr`)
-                .join(' '),
+              gridTemplateRows: `${makeArray(rows)
+                .map(value => `${getLayoutValue('rows', value % rows)}fr`)
+                .join(' ')}`,
+              gridTemplateColumns: `${makeArray(cols)
+                .map(value => `${getLayoutValue('columns', value % cols)}fr`)
+                .join(' ')}`,
             }}
           >
             {makeArray(rows * cols).map(value => (
@@ -65,7 +63,7 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
                   <Pane.Content>{`pane-${value}`}</Pane.Content>
                   {value % cols !== 0 && (
                     <Pane.Splitter
-                      layoutKey={`column-${value % cols}`}
+                      layoutKey={value % cols}
                       orientation="end"
                       min={0}
                       max={2}
@@ -73,7 +71,7 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
                   )}
                   {isNotLastRow(value) && (
                     <Pane.Splitter
-                      layoutKey={`row-${Math.ceil(value / cols)}`}
+                      layoutKey={Math.ceil(value / cols)}
                       orientation="bottom"
                       min={0}
                       max={2}

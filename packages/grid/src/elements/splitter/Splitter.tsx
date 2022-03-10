@@ -5,7 +5,7 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { useContext, useEffect, HTMLProps, useCallback } from 'react';
+import React, { useContext, useEffect, HTMLProps } from 'react';
 import {
   useSplitter,
   SplitterOrientation,
@@ -15,14 +15,13 @@ import {
 } from '@zendeskgarden/container-splitter';
 import { SplitterContext } from '../../utils/useSplitterContext';
 import { PaneContext } from '../../utils/usePaneContext';
-import { ORIENTATION } from '../../utils/types';
-import { getPx, getFr } from './PaneProvider';
+import { ORIENTATION, DIMENSIONS } from '../../utils/types';
 
 import { StyledPaneItem } from '../../styled/splitter/StyledPaneItem';
 import { StyledSeparatorContainer } from '../../styled/splitter/StyledSeparatorContainer';
 import { StyledSeparator } from '../../styled/splitter/StyledSeparator';
 export interface ISplitterProps extends HTMLProps<any> {
-  layoutKey: string;
+  layoutKey: number;
   min: number;
   max: number;
   orientation?: ORIENTATION;
@@ -45,6 +44,13 @@ const paneToSplitterOrientation = {
   end: SplitterOrientation.VERTICAL,
   top: SplitterOrientation.HORIZONTAL,
   bottom: SplitterOrientation.HORIZONTAL
+};
+
+const orientationToDimension = {
+  start: 'columns',
+  end: 'columns',
+  top: 'rows',
+  bottom: 'rows',
 };
 
 export const Splitter = ({
@@ -73,39 +79,19 @@ export const Splitter = ({
 
   const splitterOrientation = paneToSplitterOrientation[orientation];
 
-  const getPxForSplitter = useCallback((layoutValue: number) => {
-    switch(splitterOrientation) {
-      case SplitterOrientation.HORIZONTAL:
-        return getPx(layoutValue, splitterContext.totalHeightFractions, splitterContext.totalPanesHeight);
-      case SplitterOrientation.VERTICAL:
-        return getPx(layoutValue, splitterContext.totalWidthFractions, splitterContext.totalPanesWidth);
-      default:
-        return 0;
-    }
-  }, [splitterContext, splitterOrientation]);
-
-  const getFrForSplitter = useCallback((layoutValue: number) => {
-    switch(splitterOrientation) {
-      case SplitterOrientation.HORIZONTAL:
-        return getFr(layoutValue, splitterContext.totalHeightFractions, splitterContext.totalPanesHeight);
-      case SplitterOrientation.VERTICAL:
-        return getFr(layoutValue, splitterContext.totalWidthFractions, splitterContext.totalPanesWidth);
-      default:
-        return 0;
-    }
-  }, [splitterContext, splitterOrientation]);
+  const pixelsPerFr = splitterContext.pixelsPerFr[orientationToDimension[orientation] as DIMENSIONS];
 
   const { getSeparatorProps, getPrimaryPaneProps } = useSplitter({
     type: isFixed ? SplitterType.FIXED : SplitterType.VARIABLE,
     orientation: splitterOrientation,
     position,
-    min: getPxForSplitter(min),
-    max: getPxForSplitter(max),
+    min: min * pixelsPerFr,
+    max: max * pixelsPerFr,
     rtl,
     onChange: valueNow => {
-      splitterContext.setLayoutValue(layoutKey, getFrForSplitter(valueNow));
+      splitterContext.setLayoutValue(orientationToDimension[orientation] as DIMENSIONS, layoutKey, valueNow / pixelsPerFr);
     },
-    valueNow: getPxForSplitter(splitterContext.layoutState[layoutKey]),
+    valueNow: splitterContext.getLayoutValue(orientationToDimension[orientation] as DIMENSIONS, layoutKey, 'px'),
     environment
   });
 
