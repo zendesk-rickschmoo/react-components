@@ -5,38 +5,41 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, HTMLAttributes, forwardRef } from 'react';
 import { Splitter } from './Splitter';
 import { StyledPane } from '../../styled/splitter/StyledPane';
 import { StyledPaneItem } from '../../styled/splitter/StyledPaneItem';
 import { PaneContext } from '../../utils/usePaneContext';
-export interface IPane {
-  children?: any;
-}
 
-const PaneComponent = ({ children }: IPane) => {
-  const [paneId, setPaneId] = useState<string>();
+const PaneComponent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  ({ children }, ref) => {
+    const [paneId, setPaneId] = useState<string>();
 
-  const paneContext = useMemo(
-    () => ({
-      id: paneId,
-      setId: (id: string) => setPaneId(id)
-    }),
-    [paneId, setPaneId]
-  );
+    const paneContext = useMemo(
+      () => ({
+        id: paneId,
+        setId: (id: string) => setPaneId(id)
+      }),
+      [paneId, setPaneId]
+    );
 
-  return (
-    <PaneContext.Provider value={paneContext}>
-      <StyledPane id={paneId}>{children}</StyledPane>
-    </PaneContext.Provider>
-  );
-};
+    return (
+      <PaneContext.Provider value={paneContext}>
+        <StyledPane id={paneId} ref={ref}>
+          {children}
+        </StyledPane>
+      </PaneContext.Provider>
+    );
+  }
+);
+
+PaneComponent.displayName = 'Pane';
 
 /**
  * @extends HTMLAttributes<HTMLDivElement>
  */
- export const Pane = PaneComponent as typeof PaneComponent & {
-  Content: typeof StyledPaneItem;
+export const Pane = PaneComponent as typeof PaneComponent & {
+  Content: typeof StyledPaneItem; // create new file proxy component
   Splitter: typeof Splitter;
 };
 

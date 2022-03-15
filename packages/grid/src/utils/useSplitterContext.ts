@@ -6,24 +6,28 @@
  */
 
 import { createContext, useContext } from 'react';
-import { LAYOUT_STATE, DIMENSIONS, UNITS } from './types'
+import { DIMENSIONS, UNITS } from './types';
 
 interface ISplitterContext {
-  layoutState: LAYOUT_STATE;
-  setLayoutValue: (dimension: DIMENSIONS, id: number, value: number) => void;
-  getLayoutValue: (dimension: DIMENSIONS, id: number, units?: UNITS) => number;
-  totalPanesHeight: number,
-  totalPanesWidth: number,
-  pixelsPerFr: { rows: number, columns: number }
+  rowState: Record<string, number>;
+  columnState: Record<string, number>;
+  setRowValue: (isTop: boolean, id: string, value: number) => void;
+  setColumnValue: (isStart: boolean, id: string, value: number) => void;
+  getLayoutValue: (dimension: DIMENSIONS, id: string, units?: UNITS) => number;
+  totalPanesHeight: number;
+  totalPanesWidth: number;
+  pixelsPerFr: { rows: number; columns: number };
 }
 
 export const SplitterContext = createContext<ISplitterContext>({
-  setLayoutValue: () => undefined,
+  setRowValue: () => undefined,
+  setColumnValue: () => undefined,
   getLayoutValue: () => 0,
-  layoutState: { rows: [] , columns: [] },
+  rowState: {},
+  columnState: {},
   totalPanesHeight: 1,
   totalPanesWidth: 1,
-  pixelsPerFr: { rows: 0, columns: 0 },
+  pixelsPerFr: { rows: 0, columns: 0 }
 });
 
 /**
