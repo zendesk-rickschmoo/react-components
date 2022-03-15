@@ -21,7 +21,7 @@ import { StyledPaneItem } from '../../styled/splitter/StyledPaneItem';
 import { StyledSeparatorContainer } from '../../styled/splitter/StyledSeparatorContainer';
 import { StyledSeparator } from '../../styled/splitter/StyledSeparator';
 export interface ISplitterProps extends HTMLProps<any> {
-  layoutKey: number;
+  layoutKey: string;
   min: number;
   max: number;
   orientation?: ORIENTATION;
@@ -50,16 +50,17 @@ const orientationToDimension = {
   start: 'columns',
   end: 'columns',
   top: 'rows',
-  bottom: 'rows',
+  bottom: 'rows'
 };
 
 export const Splitter = ({
   layoutKey,
   min,
   max,
-  orientation = "end",
+  // use default props instead. no need for arg defaults
+  orientation = 'end',
   isFixed = false,
-  rtl = false,
+  rtl = false, // pull this instead from theme
   environment = window,
   isLeading,
   isTrailing,
@@ -79,7 +80,8 @@ export const Splitter = ({
 
   const splitterOrientation = paneToSplitterOrientation[orientation];
 
-  const pixelsPerFr = splitterContext.pixelsPerFr[orientationToDimension[orientation] as DIMENSIONS];
+  const pixelsPerFr =
+    splitterContext.pixelsPerFr[orientationToDimension[orientation] as DIMENSIONS];
 
   const { getSeparatorProps, getPrimaryPaneProps } = useSplitter({
     type: isFixed ? SplitterType.FIXED : SplitterType.VARIABLE,
@@ -87,11 +89,26 @@ export const Splitter = ({
     position,
     min: min * pixelsPerFr,
     max: max * pixelsPerFr,
-    rtl,
+    rtl, // context provider for styled components v4 for theme e.g. dropdowns
     onChange: valueNow => {
-      splitterContext.setLayoutValue(orientationToDimension[orientation] as DIMENSIONS, layoutKey, valueNow / pixelsPerFr);
+      switch (orientationToDimension[orientation]) {
+        case 'rows':
+          splitterContext.setRowValue(orientation === 'top', layoutKey, valueNow / pixelsPerFr);
+          break;
+        case 'columns':
+          splitterContext.setColumnValue(
+            orientation === 'start',
+            layoutKey,
+            valueNow / pixelsPerFr
+          );
+          break;
+      }
     },
-    valueNow: splitterContext.getLayoutValue(orientationToDimension[orientation] as DIMENSIONS, layoutKey, 'px'),
+    valueNow: splitterContext.getLayoutValue(
+      orientationToDimension[orientation] as DIMENSIONS,
+      layoutKey,
+      'px'
+    ),
     environment
   });
 

@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import useResizeObserver from "use-resize-observer";
+import useResizeObserver from 'use-resize-observer';
 import { Story } from '@storybook/react';
 import { PaneProvider, Pane, IPaneProviderReturnProps } from '@zendeskgarden/react-grid';
 
@@ -26,18 +26,16 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
     <PaneProvider
       totalPanesWidth={width}
       totalPanesHeight={height}
-      defaultLayoutValues={{
-        columns: makeArray(cols).reduce((prev: any, value) => {
-            prev.push([value % cols, 1]);
+      defaultColumnValues={makeArray(cols).reduce((prev: any, value) => {
+        prev[`pane-${value % cols}`] = 1;
 
-            return prev;
-          }, []),
-        rows: makeArray(rows).reduce((prev: any, value) => {
-          prev.push([value % rows, 1]);
+        return prev;
+      }, {})}
+      defaultRowValues={makeArray(rows).reduce((prev: any, value) => {
+        prev[`pane-${value % rows}`] = 1;
 
-          return prev;
-        }, [])
-      }}
+        return prev;
+      }, {})}
     >
       {({ getLayoutValue }: IPaneProviderReturnProps) => {
         const isNotLastRow = (value: number) => value < rows * cols - cols + 1;
@@ -50,11 +48,11 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
               width: '100%',
               height: '800px',
               gridTemplateRows: `${makeArray(rows)
-                .map(value => `${getLayoutValue('rows', value % rows)}fr`)
+                .map(value => `${getLayoutValue('rows', `pane-${value % rows}`)}fr`)
                 .join(' ')}`,
               gridTemplateColumns: `${makeArray(cols)
-                .map(value => `${getLayoutValue('columns', value % cols)}fr`)
-                .join(' ')}`,
+                .map(value => `${getLayoutValue('columns', `pane-${value % cols}`)}fr`)
+                .join(' ')}`
             }}
           >
             {makeArray(rows * cols).map(value => (
@@ -63,7 +61,7 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
                   <Pane.Content>{`pane-${value}`}</Pane.Content>
                   {value % cols !== 0 && (
                     <Pane.Splitter
-                      layoutKey={value % cols}
+                      layoutKey={`pane-${value % cols}`}
                       orientation="end"
                       min={0}
                       max={2}
@@ -71,7 +69,7 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
                   )}
                   {isNotLastRow(value) && (
                     <Pane.Splitter
-                      layoutKey={Math.ceil(value / cols)}
+                      layoutKey={`pane-${Math.ceil(value / cols)}`}
                       orientation="bottom"
                       min={0}
                       max={2}
