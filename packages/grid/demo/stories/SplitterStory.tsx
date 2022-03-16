@@ -37,7 +37,7 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
         return prev;
       }, {})}
     >
-      {({ getLayoutValue }: IPaneProviderReturnProps) => {
+      {({ getGridTemplateColumns, getGridTemplateRows }: IPaneProviderReturnProps) => {
         const isNotLastRow = (value: number) => value < rows * cols - cols + 1;
 
         return (
@@ -47,12 +47,8 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
               display: 'grid',
               width: '100%',
               height: '800px',
-              gridTemplateRows: `${makeArray(rows)
-                .map(value => `${getLayoutValue('rows', `pane-${value % rows}`)}fr`)
-                .join(' ')}`,
-              gridTemplateColumns: `${makeArray(cols)
-                .map(value => `${getLayoutValue('columns', `pane-${value % cols}`)}fr`)
-                .join(' ')}`
+              gridTemplateRows: getGridTemplateRows(),
+              gridTemplateColumns: getGridTemplateColumns(),
             }}
           >
             {makeArray(rows * cols).map(value => (
@@ -63,7 +59,7 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
                     <Pane.Splitter
                       layoutKey={`pane-${value % cols}`}
                       orientation="end"
-                      min={0}
+                      min={0.5}
                       max={2}
                     />
                   )}
@@ -71,7 +67,7 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
                     <Pane.Splitter
                       layoutKey={`pane-${Math.ceil(value / cols)}`}
                       orientation="bottom"
-                      min={0}
+                      min={0.5}
                       max={2}
                     />
                   )}
