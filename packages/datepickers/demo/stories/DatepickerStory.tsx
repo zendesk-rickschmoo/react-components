@@ -8,8 +8,9 @@
 import React from 'react';
 import { Story } from '@storybook/react';
 import { Col, Grid, Row } from '@zendeskgarden/react-grid';
-import { Field, Input, Label } from '@zendeskgarden/react-forms';
+import { Field, Label, MediaInput } from '@zendeskgarden/react-forms';
 import { Datepicker, IDatepickerProps } from '@zendeskgarden/react-datepickers';
+import CalendarIcon from '@zendeskgarden/svg-icons/src/12/calendar-stroke.svg';
 import { DATE_STYLE } from './types';
 
 interface IArgs extends IDatepickerProps {
@@ -27,7 +28,7 @@ export const DatepickerStory: Story<IArgs> = ({ dateStyle, isCompact, ...args })
           <Field>
             <Label hidden>{Datepicker.displayName}</Label>
             <Datepicker {...args} formatDate={formatDate} isCompact={isCompact}>
-              <Input isCompact={isCompact} style={{ width: isCompact ? 256 : 320 }} />
+              <MediaInput end={<CalendarIcon />} />
             </Datepicker>
           </Field>
         </Col>

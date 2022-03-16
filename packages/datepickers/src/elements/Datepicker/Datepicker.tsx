@@ -200,9 +200,7 @@ export const Datepicker = forwardRef<HTMLDivElement, IDatepickerProps>((props, c
               }),
               onClick: composeEventHandlers(childElement.props.onClick, () => {
                 /** Ensure click/focus events from associated labels are not triggered */
-                if (isInputMouseDownRef.current && !state.isOpen) {
-                  dispatch({ type: 'OPEN' });
-                }
+                dispatch({ type: 'OPEN' });
               }),
               onBlur: composeEventHandlers(childElement.props.onBlur, () => {
                 dispatch({ type: 'CLOSE' });
