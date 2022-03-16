@@ -21,6 +21,8 @@ export interface IPaneProvider {
 
 export interface IPaneProviderReturnProps {
   getLayoutValue: (dimension: DIMENSIONS, key: string, units?: UNITS) => number;
+  getGridTemplateRows: (units?: UNITS) => string;
+  getGridTemplateColumns: (units?: UNITS) => string;
 }
 
 export const getFr = (pixels: number, totalFractions: number, totalDimension: number) => {
@@ -180,6 +182,36 @@ export const PaneProvider = ({
     [rowState, columnState, layoutStateInPixels]
   );
 
+  const getGridTemplateColumns = useCallback(
+    (units?: UNITS) => {
+      const { columnArray } = layoutIndices;
+
+      switch (units) {
+        case 'px':
+          return columnArray.map(col => `${layoutStateInPixels.columns[col]}fr`).join(' ');
+        case 'fr':
+        default:
+          return columnArray.map(col => `${columnState[col]}fr`).join(' ');
+      }
+    },
+    [layoutIndices, columnState, layoutStateInPixels]
+  );
+
+  const getGridTemplateRows = useCallback(
+    (units?: UNITS) => {
+      const { rowArray } = layoutIndices;
+
+      switch (units) {
+        case 'px':
+          return rowArray.map(row => `${layoutStateInPixels.rows[row]}px`).join(' ');
+        case 'fr':
+        default:
+          return rowArray.map(row => `${rowState[row]}fr`).join(' ');
+      }
+    },
+    [layoutIndices, rowState, layoutStateInPixels]
+  );
+
   const splitterContext = useMemo(
     () => ({
       columnState,
@@ -189,7 +221,7 @@ export const PaneProvider = ({
       getLayoutValue,
       totalPanesHeight,
       totalPanesWidth,
-      pixelsPerFr
+      pixelsPerFr,
     }),
     [
       rowState,
@@ -199,16 +231,16 @@ export const PaneProvider = ({
       getLayoutValue,
       totalPanesHeight,
       totalPanesWidth,
-      pixelsPerFr
+      pixelsPerFr,
     ]
   );
 
   return (
     <SplitterContext.Provider value={splitterContext}>
       {children({
-        getLayoutValue
-        // getGridTemplateColumn,
-        // getGridTemplateRow,
+        getLayoutValue,
+        getGridTemplateColumns,
+        getGridTemplateRows
       })}
     </SplitterContext.Provider>
   );
