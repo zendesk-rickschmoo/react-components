@@ -56,17 +56,63 @@ export const PaneProvider = ({
   totalPanesHeight,
   defaultRowValues,
   defaultColumnValues,
+  rowValues,
+  columnValues,
+  onChange,
   children
 }: IPaneProvider) => {
+  const isControlled =
+    rowValues !== undefined &&
+    rowValues !== null &&
+    columnValues !== undefined &&
+    columnValues !== null;
   const [rowState, setRowState] = useState<Record<string, number>>(defaultRowValues || {});
   const [columnState, setColumnState] = useState<Record<string, number>>(defaultColumnValues || {});
+  const rowsTrack = isControlled ? rowValues : rowState;
+  const columnsTrack = isControlled ? columnValues : columnState;
+
+  const setRowsTrack = useCallback(
+    (
+      values: Record<string, number> | ((state: Record<string, number>) => Record<string, number>)
+    ) => {
+      if (isControlled) {
+        switch (typeof values) {
+          case 'function':
+            return onChange?.(values(rowsTrack), columnsTrack);
+          case 'object':
+            return onChange?.(values, columnsTrack);
+        }
+      }
+
+      return setRowState(values);
+    },
+    [isControlled, onChange, setRowState, columnsTrack, rowsTrack]
+  );
+
+  const setColumnsTrack = useCallback(
+    (
+      values: Record<string, number> | ((state: Record<string, number>) => Record<string, number>)
+    ) => {
+      if (isControlled) {
+        switch (typeof values) {
+          case 'function':
+            return onChange?.(rowsTrack, values(columnsTrack));
+          case 'object':
+            return onChange?.(rowsTrack, values);
+        }
+      }
+
+      return setColumnState(values);
+    },
+    [isControlled, onChange, setColumnState, rowsTrack, columnsTrack]
+  );
 
   const totalFractions = useMemo(
     () => ({
-      rows: Object.values(rowState).reduce((prev, value) => (value ? value : 0) + prev, 0),
-      columns: Object.values(columnState).reduce((prev, value) => (value ? value : 0) + prev, 0)
+      rows: Object.values(rowsTrack).reduce((prev, value) => (value ? value : 0) + prev, 0),
+      columns: Object.values(columnsTrack).reduce((prev, value) => (value ? value : 0) + prev, 0)
     }),
-    [rowState, columnState]
+    [rowsTrack, columnsTrack]
   );
 
   const pixelsPerFr = useMemo(
@@ -79,15 +125,15 @@ export const PaneProvider = ({
 
   const layoutStateInPixels = useMemo(
     () => ({
-      rows: convertToPixels(rowState, pixelsPerFr.rows),
-      columns: convertToPixels(columnState, pixelsPerFr.columns)
+      rows: convertToPixels(rowsTrack, pixelsPerFr.rows),
+      columns: convertToPixels(columnsTrack, pixelsPerFr.columns)
     }),
-    [rowState, columnState, pixelsPerFr]
+    [rowsTrack, columnsTrack, pixelsPerFr]
   );
 
   const layoutIndices = useMemo(() => {
-    const rowArray = Object.keys(rowState);
-    const columnArray = Object.keys(columnState);
+    const rowArray = Object.keys(rowsTrack);
+    const columnArray = Object.keys(columnsTrack);
 
     const rows = rowArray.reduce((prev, key, index) => {
       prev[key] = index;
@@ -107,15 +153,15 @@ export const PaneProvider = ({
       rowArray,
       columnArray
     };
-  }, [rowState, columnState]);
+  }, [rowsTrack, columnsTrack]);
 
   const setRowValue = useCallback(
     (isTop: boolean, id: string, value: number) => {
       const { rows, rowArray } = layoutIndices;
       const indexTraversal = isTop ? -1 : 1;
 
-      setRowState(state => {
-        const oldValue = rowState[id];
+      setRowsTrack(state => {
+        const oldValue = rowsTrack[id];
         const stealFromIndex = rows[id] + indexTraversal;
 
         if (stealFromIndex < 0 || stealFromIndex > rowArray.length - 1) {
@@ -131,12 +177,12 @@ export const PaneProvider = ({
         } as Record<string, number>;
 
         nextState[id] = value;
-        nextState[stealFromKey] = rowState[stealFromKey] + difference;
+        nextState[stealFromKey] = rowsTrack[stealFromKey] + difference;
 
         return nextState;
       });
     },
-    [layoutIndices, rowState]
+    [layoutIndices, rowsTrack, setRowsTrack]
   );
 
   const setColumnValue = useCallback(
@@ -144,8 +190,8 @@ export const PaneProvider = ({
       const { columns, columnArray } = layoutIndices;
       const indexTraversal = isStart ? -1 : 1;
 
-      setColumnState(state => {
-        const oldValue = columnState[id];
+      setColumnsTrack(state => {
+        const oldValue = columnsTrack[id];
         const stealFromIndex = columns[id] + indexTraversal;
 
         if (stealFromIndex < 0 || stealFromIndex > columnArray.length - 1) {
@@ -161,12 +207,12 @@ export const PaneProvider = ({
         } as Record<string, number>;
 
         nextState[id] = value;
-        nextState[stealFromKey] = columnState[stealFromKey] + difference;
+        nextState[stealFromKey] = columnsTrack[stealFromKey] + difference;
 
         return nextState;
       });
     },
-    [layoutIndices, columnState]
+    [layoutIndices, columnsTrack, setColumnsTrack]
   );
 
   const getLayoutValue = useCallback(
@@ -176,10 +222,10 @@ export const PaneProvider = ({
           return layoutStateInPixels[dimension][key] || 0;
         case 'fr':
         default:
-          return dimension === 'rows' ? rowState[key] : columnState[key];
+          return dimension === 'rows' ? rowsTrack[key] : columnsTrack[key];
       }
     },
-    [rowState, columnState, layoutStateInPixels]
+    [columnsTrack, rowsTrack, layoutStateInPixels]
   );
 
   const getGridTemplateColumns = useCallback(
@@ -191,10 +237,10 @@ export const PaneProvider = ({
           return columnArray.map(col => `${layoutStateInPixels.columns[col]}fr`).join(' ');
         case 'fr':
         default:
-          return columnArray.map(col => `${columnState[col]}fr`).join(' ');
+          return columnArray.map(col => `${columnsTrack[col]}fr`).join(' ');
       }
     },
-    [layoutIndices, columnState, layoutStateInPixels]
+    [layoutIndices, columnsTrack, layoutStateInPixels]
   );
 
   const getGridTemplateRows = useCallback(
@@ -206,10 +252,10 @@ export const PaneProvider = ({
           return rowArray.map(row => `${layoutStateInPixels.rows[row]}px`).join(' ');
         case 'fr':
         default:
-          return rowArray.map(row => `${rowState[row]}fr`).join(' ');
+          return rowArray.map(row => `${rowsTrack[row]}fr`).join(' ');
       }
     },
-    [layoutIndices, rowState, layoutStateInPixels]
+    [layoutIndices, rowsTrack, layoutStateInPixels]
   );
 
   const splitterContext = useMemo(
@@ -221,7 +267,7 @@ export const PaneProvider = ({
       getLayoutValue,
       totalPanesHeight,
       totalPanesWidth,
-      pixelsPerFr,
+      pixelsPerFr
     }),
     [
       rowState,
@@ -231,7 +277,7 @@ export const PaneProvider = ({
       getLayoutValue,
       totalPanesHeight,
       totalPanesWidth,
-      pixelsPerFr,
+      pixelsPerFr
     ]
   );
 
