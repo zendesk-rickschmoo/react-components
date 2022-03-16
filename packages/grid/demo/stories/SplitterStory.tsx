@@ -5,7 +5,7 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import useResizeObserver from 'use-resize-observer';
 import { Story } from '@storybook/react';
 import { PaneProvider, Pane, IPaneProviderReturnProps } from '@zendeskgarden/react-grid';
@@ -21,21 +21,36 @@ const makeArray = (length: number) => {
 
 export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
   const { ref, width = 1, height = 1 } = useResizeObserver<HTMLDivElement>();
+  const [rowState, setRowState] = useState<Record<string, number>>(
+    makeArray(rows).reduce((prev: any, value) => {
+      prev[`pane-${value % rows}`] = 1;
+
+      return prev;
+    }, {})
+  );
+  const [colState, setColState] = useState<Record<string, number>>(
+    makeArray(cols).reduce((prev: any, value) => {
+      prev[`pane-${value % cols}`] = 1;
+
+      return prev;
+    }, {})
+  );
+
+  const onChange = useCallback(
+    (rowValues: Record<string, number>, colValues: Record<string, number>) => {
+      setColState(colValues);
+      setRowState(rowValues);
+    },
+    [setColState, setRowState]
+  );
 
   return (
     <PaneProvider
       totalPanesWidth={width}
       totalPanesHeight={height}
-      defaultColumnValues={makeArray(cols).reduce((prev: any, value) => {
-        prev[`pane-${value % cols}`] = 1;
-
-        return prev;
-      }, {})}
-      defaultRowValues={makeArray(rows).reduce((prev: any, value) => {
-        prev[`pane-${value % rows}`] = 1;
-
-        return prev;
-      }, {})}
+      columnValues={colState}
+      rowValues={rowState}
+      onChange={onChange}
     >
       {({ getGridTemplateColumns, getGridTemplateRows }: IPaneProviderReturnProps) => {
         const isNotLastRow = (value: number) => value < rows * cols - cols + 1;
@@ -48,7 +63,7 @@ export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
               width: '100%',
               height: '800px',
               gridTemplateRows: getGridTemplateRows(),
-              gridTemplateColumns: getGridTemplateColumns(),
+              gridTemplateColumns: getGridTemplateColumns()
             }}
           >
             {makeArray(rows * cols).map(value => (
