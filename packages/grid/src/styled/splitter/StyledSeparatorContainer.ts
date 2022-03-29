@@ -19,16 +19,18 @@ const getOrientationStyles = ({
   isHorizontal,
   theme
 }: IStyledSeparatorContainerProps & ThemeProps<DefaultTheme>) => {
-  if (!isHorizontal) {
+  if (isHorizontal) {
     return css`
       align-items: center;
-      margin-top: -${theme.space.base * 3}px;
+      cursor: row-resize;
+      margin-top: -${theme.space.base}px;
     `;
   }
 
   return css`
     justify-content: center;
-    margin-left: -${theme.space.base * 3}px;
+    cursor: col-resize;
+    margin-left: -${theme.space.base}px;
   `;
 };
 
@@ -40,26 +42,28 @@ export const StyledSeparatorContainer = styled.div.attrs<IStyledSeparatorContain
   position: absolute;
   z-index: 999999;
   outline: none;
+  width: ${props =>
+    props.isHorizontal === false ? `${props.theme.space.base * 2 - 1}px` : '100%'};
+  height: ${props => (props.isHorizontal ? `${props.theme.space.base * 2 - 1}px` : '100%')};
   ${getOrientationStyles}
-  width: ${props => (props.isHorizontal === false ? `${props.theme.space.base * 6}px` : '100%')};
-  height: ${props => (props.isHorizontal ? `${props.theme.space.base * 6}px` : '100%')};
-  margin-left: -${props => props.theme.space.base * 3}px;
 
   &:hover > ${StyledSeparator} {
-    box-shadow: 0 0 0 ${props => props.theme.space.base / 4}px
-      ${props => getColor('blue', 600, props.theme)};
+    width: ${props => props.isHorizontal === false && `${props.theme.space.base / 2}px`};
+    height: ${props => props.isHorizontal && `${props.theme.space.base / 2}px`};
     background-color: ${props => getColor('blue', 600, props.theme)};
   }
 
   &:active > ${StyledSeparator} {
-    box-shadow: 0 0 0 ${props => props.theme.space.base / 2}px
-      ${props => getColor('blue', 800, props.theme)};
+    width: ${props => props.isHorizontal === false && `${props.theme.space.base / 2}px`};
+    height: ${props => props.isHorizontal && `${props.theme.space.base / 2}px`};
     background-color: ${props => getColor('blue', 800, props.theme)};
   }
 
   &:focus > ${StyledSeparator} {
     box-shadow: 0 0 0 ${props => props.theme.space.base * 0.75}px
-      ${props => getColor('blue', 300, props.theme, 0.35)};
+      ${props => getColor('blue', 600, props.theme, 0.35)};
+    width: ${props => props.isHorizontal === false && `${props.theme.space.base / 2}px`};
+    height: ${props => props.isHorizontal && `${props.theme.space.base / 2}px`};
     background-color: ${props => getColor('blue', 600, props.theme)};
   }
 
