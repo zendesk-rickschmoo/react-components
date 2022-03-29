@@ -22,7 +22,7 @@ export const StyledSeparator = styled.div.attrs<IStyledSeparatorProps>({
   border-style: none;
   background-color: ${props => getColor('gray', 300, props.theme)};
   width: ${props => (props.isHorizontal === false ? `${props.theme.space.base / 4}px` : '100%')};
-  height: ${props => (props.isHorizontal ? `${props.theme.space.base / 2}px` : '100%')};
+  height: ${props => (props.isHorizontal ? `${props.theme.space.base / 4}px` : '100%')};
   margin: 0 auto;
 
   ${props => retrieveComponentStyles(COMPONENT_ID, props)};
