@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
 import { Meta, ArgsTable, Canvas, Story } from '@storybook/addon-docs';
 import { PaneProvider } from '@zendeskgarden/react-grid';
-import { SplitterStory } from './stories/SplitterStory';
+import { useArgs } from '@storybook/client-api';
+import { SplitterStory, makeArray } from './stories/SplitterStory';
+import { VEGGIE_IPSUM } from './stories/data';
 
 <Meta title="Packages/Grid/Splitter" component={PaneProvider} />
 
@@ -13,7 +16,25 @@ import { SplitterStory } from './stories/SplitterStory';
 <Canvas>
   <Story
     name="Splitter"
-    args={{ rows: 2, cols: 4 }}
+    args={{
+      rows: 2,
+      cols: 4,
+      isRtl: false,
+      hasOverflow: false,
+      textContent: VEGGIE_IPSUM 
+    }}
+    argTypes={{
+      totalPanesWidth: { name: 'totalPanesWidth', table: { category: 'Pane Provider'} },
+      totalPanesHeight: { name: 'totalPanesHeight', table: { category: 'Pane Provider'} },
+      columnValues: { name: 'columnValues', table: { category: 'Pane Provider'} },
+      rowValues: { name: 'rowValues', table: { category: 'Pane Provider'} },
+      onChange: { name: 'onChange', table: { category: 'Pane Provider'} },
+      textContent: { name: 'textContent', table: { category: 'Story'} },
+      hasOverflow: { name: 'Overflow', table: { category: 'Story'} },
+      isRtl: { name: 'Right-to-left', table: { category: 'Story' } },
+      rows: { name: 'rows', table: { category: 'Story' } },
+      cols: { name: 'cols', table: { category: 'Story' } },
+    }}
     parameters={{
       design: {
         allowFullscreen: true,
@@ -22,6 +43,30 @@ import { SplitterStory } from './stories/SplitterStory';
       }
     }}
   >
-    {args => <SplitterStory {...args} />}
+    {args => {
+      const updateArgs = useArgs()[1];
+      const handleValueChange = (rowValues, columnValues) => updateArgs({ rowValues, columnValues });
+      useEffect(() => {
+        updateArgs({ 
+          rowValues: makeArray(args.rows).reduce((prev, value) => {
+            prev[`pane-${value % args.rows}`] = 1;
+
+            return prev;
+          }, {})
+        });
+      }, [args.rows]);
+
+      useEffect(() => {
+        updateArgs({ 
+          colValues: makeArray(args.cols).reduce((prev, value) => {
+              prev[`pane-${value % args.cols}`] = 1;
+
+              return prev;
+            }, {}) 
+          });
+      }, [args.cols]);
+
+      return <SplitterStory {...args} handleValueChange={handleValueChange} />
+    }}
   </Story>
 </Canvas>

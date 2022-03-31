@@ -30,9 +30,16 @@ const getOrientationStyles = ({
   return css`
     justify-content: center;
     cursor: col-resize;
-    margin-left: -${theme.space.base}px;
+    margin-${theme.rtl ? 'right' : 'left'}: -${theme.space.base}px;
   `;
 };
+
+const getSeparatorDimensions = ({ isHorizontal, theme }: IStyledSeparatorContainerProps & ThemeProps<DefaultTheme>) => {
+  return css`
+    width: ${isHorizontal === false && `${theme.space.base / 2}px`};
+    height: ${isHorizontal && `${theme.space.base / 2}px`};
+  `;
+}
 
 export const StyledSeparatorContainer = styled.div.attrs<IStyledSeparatorContainerProps>({
   'data-garden-id': COMPONENT_ID,
@@ -48,22 +55,19 @@ export const StyledSeparatorContainer = styled.div.attrs<IStyledSeparatorContain
   ${getOrientationStyles}
 
   &:hover > ${StyledSeparator} {
-    width: ${props => props.isHorizontal === false && `${props.theme.space.base / 2}px`};
-    height: ${props => props.isHorizontal && `${props.theme.space.base / 2}px`};
+    ${getSeparatorDimensions}
     background-color: ${props => getColor('blue', 600, props.theme)};
   }
 
   &:active > ${StyledSeparator} {
-    width: ${props => props.isHorizontal === false && `${props.theme.space.base / 2}px`};
-    height: ${props => props.isHorizontal && `${props.theme.space.base / 2}px`};
+    ${getSeparatorDimensions}
     background-color: ${props => getColor('blue', 800, props.theme)};
   }
 
   &:focus > ${StyledSeparator} {
+    ${getSeparatorDimensions}
     box-shadow: 0 0 0 ${props => props.theme.space.base * 0.75}px
       ${props => getColor('blue', 600, props.theme, 0.35)};
-    width: ${props => props.isHorizontal === false && `${props.theme.space.base / 2}px`};
-    height: ${props => props.isHorizontal && `${props.theme.space.base / 2}px`};
     background-color: ${props => getColor('blue', 600, props.theme)};
   }
 

@@ -6,6 +6,7 @@
  */
 
 import React, { useContext, useEffect, HTMLProps } from 'react';
+import { ThemeContext } from 'styled-components';
 import {
   useSplitter,
   SplitterOrientation,
@@ -57,17 +58,16 @@ export const Splitter = ({
   layoutKey,
   min,
   max,
-  // use default props instead. no need for arg defaults
-  orientation = 'end',
+  orientation = 'start',
   isFixed = false,
-  rtl = false, // pull this instead from theme
-  environment = window,
   isLeading,
   isTrailing,
+  environment = window,
   ...props
 }: ISplitterProps) => {
   const splitterContext = useContext(SplitterContext);
   const paneContext = useContext(PaneContext);
+  const themeContext = useContext(ThemeContext);
   let position;
 
   if (isLeading === true) {
@@ -75,13 +75,13 @@ export const Splitter = ({
   } else if (isTrailing === true) {
     position = SplitterPosition.TRAILS;
   } else {
-    position = orientationToPosition[orientation];
+    position = orientationToPosition[orientation!];
   }
 
-  const splitterOrientation = paneToSplitterOrientation[orientation];
+  const splitterOrientation = paneToSplitterOrientation[orientation!];
 
   const pixelsPerFr =
-    splitterContext.pixelsPerFr[orientationToDimension[orientation] as DIMENSIONS];
+    splitterContext.pixelsPerFr[orientationToDimension[orientation!] as DIMENSIONS];
 
   const { getSeparatorProps, getPrimaryPaneProps } = useSplitter({
     type: isFixed ? SplitterType.FIXED : SplitterType.VARIABLE,
@@ -89,9 +89,10 @@ export const Splitter = ({
     position,
     min: min * pixelsPerFr,
     max: max * pixelsPerFr,
-    rtl, // context provider for styled components v4 for theme e.g. dropdowns
+    rtl: themeContext.rtl,
+    environment: environment!,
     onChange: valueNow => {
-      switch (orientationToDimension[orientation]) {
+      switch (orientationToDimension[orientation!]) {
         case 'rows':
           splitterContext.setRowValue(orientation === 'top', layoutKey, valueNow / pixelsPerFr);
           break;
@@ -105,11 +106,10 @@ export const Splitter = ({
       }
     },
     valueNow: splitterContext.getLayoutValue(
-      orientationToDimension[orientation] as DIMENSIONS,
+      orientationToDimension[orientation!] as DIMENSIONS,
       layoutKey,
       'px'
     ),
-    environment
   });
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export const Splitter = ({
     }
   }, [paneContext, getPrimaryPaneProps]);
 
-  const isHorizontal = paneToSplitterOrientation[orientation] === SplitterOrientation.HORIZONTAL;
+  const isHorizontal = paneToSplitterOrientation[orientation!] === SplitterOrientation.HORIZONTAL;
 
   const separatorProps = getSeparatorProps({
     'aria-controls': paneContext.id
@@ -131,4 +131,10 @@ export const Splitter = ({
       </StyledSeparatorContainer>
     </StyledPaneItem>
   );
+};
+
+Splitter.defaultProps = {
+  orientation: 'end',
+  isFixed: false,
+  environment: window,
 };
