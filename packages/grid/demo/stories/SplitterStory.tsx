@@ -5,93 +5,108 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import useResizeObserver from 'use-resize-observer';
 import { Story } from '@storybook/react';
-import { PaneProvider, Pane, IPaneProviderReturnProps } from '@zendeskgarden/react-grid';
+import { DefaultTheme } from 'styled-components';
+import { PaneProvider, IPaneProvider, Pane, IPaneProviderReturnProps } from '@zendeskgarden/react-grid';
+import { ThemeProvider, IGardenTheme } from '@zendeskgarden/react-theming';
 
-interface IArgs {
+interface IArgs extends IPaneProvider {
+  handleValueChange: IPaneProvider['onChange'];
   rows: number;
   cols: number;
+  isRtl: boolean;
+  hasOverflow: boolean;
+  textContent: string;
 }
 
-const makeArray = (length: number) => {
+export const makeArray = (length: number) => {
   return Array.from({ length }, () => 0).map((_, index) => index + 1);
 };
 
-export const SplitterStory: Story<IArgs> = ({ rows, cols }) => {
+export const SplitterStory: Story<IArgs> = ({ 
+  totalPanesWidth,
+  totalPanesHeight,
+  columnValues,
+  rowValues,
+  handleValueChange,
+  rows,
+  cols,
+  isRtl,
+  hasOverflow,
+  textContent,
+}) => {
   const { ref, width = 1, height = 1 } = useResizeObserver<HTMLDivElement>();
-  const [rowState, setRowState] = useState<Record<string, number>>(
-    makeArray(rows).reduce((prev: any, value) => {
-      prev[`pane-${value % rows}`] = 1;
-
-      return prev;
-    }, {})
-  );
-  const [colState, setColState] = useState<Record<string, number>>(
-    makeArray(cols).reduce((prev: any, value) => {
-      prev[`pane-${value % cols}`] = 1;
-
-      return prev;
-    }, {})
-  );
-
-  const onChange = useCallback(
-    (rowValues: Record<string, number>, colValues: Record<string, number>) => {
-      setColState(colValues);
-      setRowState(rowValues);
-    },
-    [setColState, setRowState]
-  );
 
   return (
-    <PaneProvider
-      totalPanesWidth={width}
-      totalPanesHeight={height}
-      columnValues={colState}
-      rowValues={rowState}
-      onChange={onChange}
+    <ThemeProvider
+      focusVisibleRef={null}
+      theme={
+        ((parentTheme: DefaultTheme) => ({
+          ...parentTheme,
+          rtl: isRtl ? 'rtl' : parentTheme.rtl
+        })) as unknown as IGardenTheme
+      }
     >
-      {({ getGridTemplateColumns, getGridTemplateRows }: IPaneProviderReturnProps) => {
-        const isNotLastRow = (value: number) => value < rows * cols - cols + 1;
+      <PaneProvider
+        totalPanesWidth={totalPanesWidth ? totalPanesWidth : width}
+        totalPanesHeight={totalPanesWidth ? totalPanesHeight : height}
+        columnValues={columnValues}
+        rowValues={rowValues}
+        onChange={handleValueChange}
+      >
+        {({ getGridTemplateColumns, getGridTemplateRows }: IPaneProviderReturnProps) => {
+          const isNotLastRow = (value: number) => value < rows * cols - cols + 1;
 
-        return (
-          <div
-            ref={ref}
-            style={{
-              display: 'grid',
-              width: '100%',
-              height: '800px',
-              gridTemplateRows: getGridTemplateRows(),
-              gridTemplateColumns: getGridTemplateColumns()
-            }}
-          >
-            {makeArray(rows * cols).map(value => (
-              <div key={`pane-${value}`}>
-                <Pane>
-                  <Pane.Content>{`pane-${value}`}</Pane.Content>
-                  {value % cols !== 0 && (
-                    <Pane.Splitter
-                      layoutKey={`pane-${value % cols}`}
-                      orientation="end"
-                      min={0.5}
-                      max={2}
-                    />
-                  )}
-                  {isNotLastRow(value) && (
-                    <Pane.Splitter
-                      layoutKey={`pane-${Math.ceil(value / cols)}`}
-                      orientation="bottom"
-                      min={0.5}
-                      max={2}
-                    />
-                  )}
-                </Pane>
-              </div>
-            ))}
-          </div>
-        );
-      }}
-    </PaneProvider>
+          return (
+            <div
+              ref={ref}
+              style={{
+                direction: isRtl ? 'rtl' : 'ltr',
+                display: 'grid',
+                width: '100%',
+                height: '90vh',
+                gridTemplateRows: getGridTemplateRows(),
+                gridTemplateColumns: getGridTemplateColumns()
+              }}
+            >
+              {makeArray(rows * cols).map(value => (
+                <div key={`pane-${value}`}>
+                  <Pane>
+                    <Pane.Content
+                      style={{
+                        overflowY: hasOverflow ? 'scroll' : undefined
+                      }}
+                    >
+                      <div style={{ height: hasOverflow ? '0px' : undefined }}>
+                        <p>{`pane-${value}`}</p>
+                        {hasOverflow && textContent && <p>{textContent}</p>}
+                      </div>
+                    </Pane.Content>
+                    {isNotLastRow(value) && (
+                      <Pane.Splitter
+                        layoutKey={`pane-${Math.ceil(value / cols)}`}
+                        orientation="bottom"
+                        min={0}
+                        max={2}
+                      />
+                    )}
+                    {value % cols !== 0 && (
+                      <Pane.Splitter
+                        layoutKey={`pane-${value % cols}`}
+                        orientation="end"
+                        min={0}
+                        max={2}
+                      />
+                    )}
+                  </Pane>
+                </div>
+              ))}
+            </div>
+          );
+        }}
+      </PaneProvider>
+    </ThemeProvider>
   );
 };
