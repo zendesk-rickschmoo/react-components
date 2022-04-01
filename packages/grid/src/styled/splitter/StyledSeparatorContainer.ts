@@ -7,6 +7,7 @@
 
 import { retrieveComponentStyles, DEFAULT_THEME, getColor } from '@zendeskgarden/react-theming';
 import styled, { css, ThemeProps, DefaultTheme } from 'styled-components';
+import { math } from 'polished';
 import { StyledSeparator } from './StyledSeparator';
 
 const COMPONENT_ID = 'splitter.separator_container';
@@ -15,31 +16,92 @@ interface IStyledSeparatorContainerProps {
   isHorizontal: boolean;
 }
 
-const getOrientationStyles = ({
+const sizeStyles = ({
   isHorizontal,
   theme
 }: IStyledSeparatorContainerProps & ThemeProps<DefaultTheme>) => {
+  const containerMarginCorrection = math(`${theme.shadowWidths.md} + ${theme.borderWidths.sm}`);
+  const containerThickness = math(`${theme.shadowWidths.md} * 2 + ${theme.borderWidths.sm}`);
+
+  let containerWidth;
+  let containerHeight;
+  let marginDirection;
+  let flexPositioning;
+  let cursorType;
+  let separatorHeight;
+  let separatorWidth;
+
   if (isHorizontal) {
-    return css`
-      align-items: center;
-      cursor: row-resize;
-      margin-top: -${theme.space.base}px;
-    `;
+    marginDirection = 'margin-top';
+    containerWidth = '100%';
+    containerHeight = containerThickness;
+    separatorHeight = theme.shadowWidths.md;
+    flexPositioning = 'align-items';
+    cursorType = 'row-resize';
+  } else if (theme.rtl) {
+    marginDirection = 'margin-right';
+    containerWidth = containerThickness;
+    separatorWidth = theme.shadowWidths.md;
+    containerHeight = '100%';
+    flexPositioning = 'justify-content';
+    cursorType = 'col-resize';
+  } else {
+    marginDirection = 'margin-left';
+    containerWidth = containerThickness;
+    separatorWidth = theme.shadowWidths.md;
+    containerHeight = '100%';
+    flexPositioning = 'justify-content';
+    cursorType = 'col-resize';
   }
 
   return css`
-    justify-content: center;
-    cursor: col-resize;
-    margin-${theme.rtl ? 'right' : 'left'}: -${theme.space.base}px;
+    width: ${containerWidth};
+    height: ${containerHeight};
+    ${flexPositioning}: center;
+    cursor: ${cursorType};
+    ${marginDirection}: -${containerMarginCorrection};
+
+    &:hover > ${StyledSeparator} {
+      width: ${separatorWidth};
+      height: ${separatorHeight};
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus > ${StyledSeparator} {
+      width: ${separatorWidth};
+      height: ${separatorHeight};
+    }
+
+    &:active > ${StyledSeparator} {
+      width: ${separatorWidth};
+      height: ${separatorHeight};
+    }
   `;
 };
 
-const getSeparatorDimensions = ({ isHorizontal, theme }: IStyledSeparatorContainerProps & ThemeProps<DefaultTheme>) => {
+const colorStyles = ({ theme }: IStyledSeparatorContainerProps & ThemeProps<DefaultTheme>) => {
+  const boxShadowPrimaryHue = theme.shadows.md(getColor('primaryHue', 600, theme, 0.35)!);
+  const lightPrimaryHue = getColor('primaryHue', 600, theme);
+  const heavyPrimaryHue = getColor('primaryHue', 800, theme);
+
   return css`
-    width: ${isHorizontal === false && `${theme.space.base / 2}px`};
-    height: ${isHorizontal && `${theme.space.base / 2}px`};
+    &:hover > ${StyledSeparator} {
+      background-color: ${lightPrimaryHue};
+    }
+
+    &:focus > ${StyledSeparator} {
+      box-shadow: ${boxShadowPrimaryHue};
+      background-color: ${lightPrimaryHue};
+    }
+
+    &:active > ${StyledSeparator} {
+      background-color: ${heavyPrimaryHue};
+    }
   `;
-}
+};
 
 export const StyledSeparatorContainer = styled.div.attrs<IStyledSeparatorContainerProps>({
   'data-garden-id': COMPONENT_ID,
@@ -47,29 +109,10 @@ export const StyledSeparatorContainer = styled.div.attrs<IStyledSeparatorContain
 })<IStyledSeparatorContainerProps>`
   display: flex;
   position: absolute;
-  z-index: 999999;
-  outline: none;
-  width: ${props =>
-    props.isHorizontal === false ? `${props.theme.space.base * 2 - 1}px` : '100%'};
-  height: ${props => (props.isHorizontal ? `${props.theme.space.base * 2 - 1}px` : '100%')};
-  ${getOrientationStyles}
 
-  &:hover > ${StyledSeparator} {
-    ${getSeparatorDimensions}
-    background-color: ${props => getColor('blue', 600, props.theme)};
-  }
+  ${sizeStyles}
 
-  &:active > ${StyledSeparator} {
-    ${getSeparatorDimensions}
-    background-color: ${props => getColor('blue', 800, props.theme)};
-  }
-
-  &:focus > ${StyledSeparator} {
-    ${getSeparatorDimensions}
-    box-shadow: 0 0 0 ${props => props.theme.space.base * 0.75}px
-      ${props => getColor('blue', 600, props.theme, 0.35)};
-    background-color: ${props => getColor('blue', 600, props.theme)};
-  }
+  ${colorStyles}
 
   ${props => retrieveComponentStyles(COMPONENT_ID, props)}
 `;

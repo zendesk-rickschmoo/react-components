@@ -1,11 +1,15 @@
 import { useEffect } from 'react';
 import { Meta, ArgsTable, Canvas, Story } from '@storybook/addon-docs';
-import { PaneProvider } from '@zendeskgarden/react-grid';
+import { PaneProvider, Pane } from '@zendeskgarden/react-grid';
 import { useArgs } from '@storybook/client-api';
 import { SplitterStory, makeArray } from './stories/SplitterStory';
 import { VEGGIE_IPSUM } from './stories/data';
 
-<Meta title="Packages/Grid/Splitter" component={PaneProvider} />
+<Meta
+  title="Packages/Grid/Splitter"
+  component={PaneProvider}
+  subcomponents={{ Pane, 'Pane.Content': Pane.Content, 'Pane.Splitter': Pane.Splitter }}
+/>
 
 # API
 
@@ -17,23 +21,28 @@ import { VEGGIE_IPSUM } from './stories/data';
   <Story
     name="Splitter"
     args={{
-      rows: 2,
-      cols: 4,
-      isRtl: false,
+      columnValues: {
+        'column-1': 1,
+        'column-2': 1
+      },
+      rowValues: {
+        'row-1': 1,
+        'row-2': 1
+      },
+      defaultColumnValues: {
+        'column-1': 1,
+        'column-2': 1
+      },
+      defaultRowValues: {
+        'row-1': 1,
+        'row-2': 1
+      },
       hasOverflow: false,
-      textContent: VEGGIE_IPSUM 
+      textContent: VEGGIE_IPSUM
     }}
     argTypes={{
-      totalPanesWidth: { name: 'totalPanesWidth', table: { category: 'Pane Provider'} },
-      totalPanesHeight: { name: 'totalPanesHeight', table: { category: 'Pane Provider'} },
-      columnValues: { name: 'columnValues', table: { category: 'Pane Provider'} },
-      rowValues: { name: 'rowValues', table: { category: 'Pane Provider'} },
-      onChange: { name: 'onChange', table: { category: 'Pane Provider'} },
-      textContent: { name: 'textContent', table: { category: 'Story'} },
-      hasOverflow: { name: 'Overflow', table: { category: 'Story'} },
-      isRtl: { name: 'Right-to-left', table: { category: 'Story' } },
-      rows: { name: 'rows', table: { category: 'Story' } },
-      cols: { name: 'cols', table: { category: 'Story' } },
+      textContent: { name: 'textContent', table: { category: 'Story' } },
+      hasOverflow: { name: 'Overflow', table: { category: 'Story' } }
     }}
     parameters={{
       design: {
@@ -45,28 +54,9 @@ import { VEGGIE_IPSUM } from './stories/data';
   >
     {args => {
       const updateArgs = useArgs()[1];
-      const handleValueChange = (rowValues, columnValues) => updateArgs({ rowValues, columnValues });
-      useEffect(() => {
-        updateArgs({ 
-          rowValues: makeArray(args.rows).reduce((prev, value) => {
-            prev[`pane-${value % args.rows}`] = 1;
-
-            return prev;
-          }, {})
-        });
-      }, [args.rows]);
-
-      useEffect(() => {
-        updateArgs({ 
-          colValues: makeArray(args.cols).reduce((prev, value) => {
-              prev[`pane-${value % args.cols}`] = 1;
-
-              return prev;
-            }, {}) 
-          });
-      }, [args.cols]);
-
-      return <SplitterStory {...args} handleValueChange={handleValueChange} />
+      const handleValueChange = (rowValues, columnValues) =>
+        updateArgs({ rowValues, columnValues });
+      return <SplitterStory {...args} handleValueChange={handleValueChange} />;
     }}
   </Story>
 </Canvas>

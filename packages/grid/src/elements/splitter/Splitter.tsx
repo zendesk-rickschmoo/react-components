@@ -109,7 +109,7 @@ export const Splitter = ({
       orientationToDimension[orientation!] as DIMENSIONS,
       layoutKey,
       'px'
-    ),
+    )
   });
 
   useEffect(() => {
@@ -136,5 +136,7 @@ export const Splitter = ({
 Splitter.defaultProps = {
   orientation: 'end',
   isFixed: false,
-  environment: window,
+  environment: window
 };
+
+Splitter.displayName = 'Pane.Splitter';
