@@ -15,11 +15,13 @@ import {
   Pane,
   IPaneProviderReturnProps
 } from '@zendeskgarden/react-grid';
+import { ISplitterPane } from './types';
 
 interface IArgs extends IPaneProvider {
   handleValueChange: IPaneProvider['onChange'];
   hasOverflow: boolean;
   textContent: string;
+  panes: [ISplitterPane];
 }
 
 export const SplitterStory: Story<IArgs> = ({
@@ -28,6 +30,7 @@ export const SplitterStory: Story<IArgs> = ({
   columnValues,
   rowValues,
   handleValueChange,
+  panes,
   hasOverflow,
   textContent
 }) => {
@@ -55,58 +58,23 @@ export const SplitterStory: Story<IArgs> = ({
               gridTemplateColumns: getGridTemplateColumns()
             }}
           >
-            <Pane>
-              <Pane.Content
-                style={{
-                  overflowY: hasOverflow ? 'scroll' : undefined
-                }}
-              >
-                <div style={{ height: hasOverflow ? '0px' : undefined }}>
-                  <p>Pane 1</p>
-                  {hasOverflow && textContent && <p>{textContent}</p>}
-                </div>
-              </Pane.Content>
-              <Pane.Splitter layoutKey="row-1" orientation="bottom" min={0} max={2} />
-              <Pane.Splitter layoutKey="column-1" orientation="end" min={0} max={2} />
-            </Pane>
-            <Pane>
-              <Pane.Content
-                style={{
-                  overflowY: hasOverflow ? 'scroll' : undefined
-                }}
-              >
-                <div style={{ height: hasOverflow ? '0px' : undefined }}>
-                  <p>Pane 2</p>
-                  {hasOverflow && textContent && <p>{textContent}</p>}
-                </div>
-              </Pane.Content>
-              <Pane.Splitter layoutKey="row-1" orientation="bottom" min={0} max={2} />
-            </Pane>
-            <Pane>
-              <Pane.Content
-                style={{
-                  overflowY: hasOverflow ? 'scroll' : undefined
-                }}
-              >
-                <div style={{ height: hasOverflow ? '0px' : undefined }}>
-                  <p>Pane 3</p>
-                  {hasOverflow && textContent && <p>{textContent}</p>}
-                </div>
-              </Pane.Content>
-              <Pane.Splitter layoutKey="column-1" orientation="end" min={0} max={2} />
-            </Pane>
-            <Pane>
-              <Pane.Content
-                style={{
-                  overflowY: hasOverflow ? 'scroll' : undefined
-                }}
-              >
-                <div style={{ height: hasOverflow ? '0px' : undefined }}>
-                  <p>Pane 4</p>
-                  {hasOverflow && textContent && <p>{textContent}</p>}
-                </div>
-              </Pane.Content>
-            </Pane>
+            {panes.map(pane => (
+              <Pane key={pane.name}>
+                <Pane.Content
+                  style={{
+                    overflowY: hasOverflow ? 'scroll' : undefined
+                  }}
+                >
+                  <div style={{ height: hasOverflow ? '0px' : undefined }}>
+                    <p>{pane.name}</p>
+                    {hasOverflow && textContent && <p>{textContent}</p>}
+                  </div>
+                </Pane.Content>
+                {pane.splitters.map(splitter => (
+                  <Pane.Splitter key={splitter.layoutKey} {...splitter} />
+                ))}
+              </Pane>
+            ))}
           </div>
         );
       }}

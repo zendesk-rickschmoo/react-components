@@ -14,7 +14,7 @@ import {
   SplitterPosition,
   IUseSplitterProps
 } from '@zendeskgarden/container-splitter';
-import { SplitterContext } from '../../utils/useSplitterContext';
+import { ISplitterContext, SplitterContext } from '../../utils/useSplitterContext';
 import { PaneContext } from '../../utils/usePaneContext';
 import { ORIENTATION, DIMENSIONS } from '../../utils/types';
 
@@ -31,6 +31,7 @@ export interface ISplitterProps extends HTMLProps<any> {
   rtl?: boolean;
   environment?: IUseSplitterProps['environment'];
   isFixed?: boolean;
+  splitterContext?: ISplitterContext;
 }
 
 const orientationToPosition = {
@@ -58,16 +59,18 @@ export const Splitter = ({
   layoutKey,
   min,
   max,
-  orientation = 'start',
-  isFixed = false,
+  orientation,
+  isFixed,
   isLeading,
   isTrailing,
-  environment = window,
+  environment,
+  splitterContext: customContext,
   ...props
 }: ISplitterProps) => {
-  const splitterContext = useContext(SplitterContext);
+  const parentContext = useContext(SplitterContext);
   const paneContext = useContext(PaneContext);
   const themeContext = useContext(ThemeContext);
+  const splitterContext = customContext ? customContext : parentContext;
   let position;
 
   if (isLeading === true) {

@@ -8,7 +8,7 @@
 import { createContext, useContext } from 'react';
 import { DIMENSIONS, UNITS } from './types';
 
-interface ISplitterContext {
+export interface ISplitterContext {
   rowState: Record<string, number>;
   columnState: Record<string, number>;
   setRowValue: (isTop: boolean, id: string, value: number) => void;

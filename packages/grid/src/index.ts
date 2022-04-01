@@ -11,9 +11,11 @@ export { Row } from './elements/Row';
 
 export { PaneProvider } from './elements/splitter/PaneProvider';
 export { Pane } from './elements/splitter/Pane';
+export { default as useSplitterContext, SplitterContext } from './utils/useSplitterContext';
 
-export type { IPaneProvider } from './elements/splitter/PaneProvider';
-export type { IPane } from './elements/splitter/Pane';
+export type { IPaneProvider, IPaneProviderReturnProps } from './elements/splitter/PaneProvider';
+export type { ISplitterProps } from './elements/splitter/Splitter';
+export type { ISplitterContext } from './utils/useSplitterContext';
 
 export {
   ALIGN_ITEMS as ARRAY_ALIGN_ITEMS,
