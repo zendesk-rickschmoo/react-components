@@ -234,7 +234,7 @@ export const PaneProvider = ({
 
       switch (units) {
         case 'px':
-          return columnArray.map(col => `${layoutStateInPixels.columns[col]}fr`).join(' ');
+          return columnArray.map(col => `${layoutStateInPixels.columns[col]}px`).join(' ');
         case 'fr':
         default:
           return columnArray.map(col => `${columnsTrack[col]}fr`).join(' ');

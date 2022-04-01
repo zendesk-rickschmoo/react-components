@@ -6,7 +6,7 @@
  */
 
 import { retrieveComponentStyles, DEFAULT_THEME, getColor } from '@zendeskgarden/react-theming';
-import styled from 'styled-components';
+import styled, { css, ThemeProps, DefaultTheme } from 'styled-components';
 
 const COMPONENT_ID = 'splitter.separator';
 
@@ -14,16 +14,31 @@ export interface IStyledSeparatorProps {
   isHorizontal: boolean;
 }
 
+const sizeStyles = ({ isHorizontal, theme }: IStyledSeparatorProps & ThemeProps<DefaultTheme>) => {
+  const separatorWidth = isHorizontal === false ? theme.borderWidths.sm : '100%';
+  const separatorHeight = isHorizontal ? theme.borderWidths.sm : '100%';
+
+  return css`
+    width: ${separatorWidth};
+    height: ${separatorHeight};
+    margin: 0 auto;
+  `;
+};
+
+const colorStyles = ({ theme }: ThemeProps<DefaultTheme>) => {
+  const greyBackgroundColor = getColor('neutralHue', 300, theme);
+
+  return css`
+    background-color: ${greyBackgroundColor};
+  `;
+};
+
 export const StyledSeparator = styled.div.attrs<IStyledSeparatorProps>({
   'data-garden-id': COMPONENT_ID,
   'data-garden-version': PACKAGE_VERSION
 })<IStyledSeparatorProps>`
-  outline: none;
-  border-style: none;
-  background-color: ${props => getColor('gray', 300, props.theme)};
-  width: ${props => (props.isHorizontal === false ? `${props.theme.space.base / 4}px` : '100%')};
-  height: ${props => (props.isHorizontal ? `${props.theme.space.base / 4}px` : '100%')};
-  margin: 0 auto;
+  ${sizeStyles}
+  ${colorStyles}
 
   ${props => retrieveComponentStyles(COMPONENT_ID, props)};
 `;

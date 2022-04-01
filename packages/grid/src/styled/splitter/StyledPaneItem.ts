@@ -15,7 +15,7 @@ interface IStyledPaneItemProps {
   paneOrientation?: ORIENTATION;
 }
 
-const getGridPosition = (paneOrientation?: ORIENTATION) => {
+const layoutStyles = ({ paneOrientation }: IStyledPaneItemProps) => {
   switch (paneOrientation) {
     case 'top':
       return ` 
@@ -49,8 +49,10 @@ export const StyledPaneItem = styled.div.attrs<IStyledPaneItemProps>({
   'data-garden-id': COMPONENT_ID,
   'data-garden-version': PACKAGE_VERSION
 })<IStyledPaneItemProps>`
-  ${props => getGridPosition(props.paneOrientation)}
   position: relative;
+
+  ${layoutStyles}
+
   ${props => retrieveComponentStyles(COMPONENT_ID, props)};
 `;
 
