@@ -3,7 +3,7 @@ import { Meta, ArgsTable, Canvas, Story } from '@storybook/addon-docs';
 import { PaneProvider, Pane } from '@zendeskgarden/react-grid';
 import { useArgs } from '@storybook/client-api';
 import { SplitterStory, makeArray } from './stories/SplitterStory';
-import { VEGGIE_IPSUM } from './stories/data';
+import { VEGGIE_IPSUM, SIMPLE_SPLITTER_PANES } from './stories/data';
 
 <Meta
   title="Packages/Grid/Splitter"
@@ -37,10 +37,12 @@ import { VEGGIE_IPSUM } from './stories/data';
         'row-1': 1,
         'row-2': 1
       },
+      panes: SIMPLE_SPLITTER_PANES,
       hasOverflow: false,
       textContent: VEGGIE_IPSUM
     }}
     argTypes={{
+      panes: { name: 'children' },
       textContent: { name: 'textContent', table: { category: 'Story' } },
       hasOverflow: { name: 'Overflow', table: { category: 'Story' } }
     }}

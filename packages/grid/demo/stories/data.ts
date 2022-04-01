@@ -6,7 +6,7 @@
  */
 
 import { IColProps } from '@zendeskgarden/react-grid';
-import { IGridRow } from './types';
+import { IGridRow, ISplitterPane } from './types';
 
 const ROW_COLUMNS_STANDARD: IColProps[] = Array.from({ length: 12 }, (_, index) => ({
   children: index < 9 ? `0${index + 1}` : `${index + 1}`,
@@ -68,3 +68,49 @@ Green tea ginger carrot spiced juice sesame soba noodles coconut tahini drizzle 
 
 Macadamia nut cookies black bean wraps banana bread parsley cherry bomb tasty cocoa fruit smash peach strawberry mango cremini mushrooms ultimate black bean chili dip elderberry hummus main course walnut mushroom tart overflowing pesto chilies summer. Paprika one bowl cherry lemonade zest mocha chocolate mint lime taco salsa creamy cauliflower alfredo sauce quinoa flatbread picnic Thai seasonal kung pao pepper blueberry chia seed jam lavender lemonade cozy butternut Italian linguine puttanesca rich coconut cream red curry tofu noodles tofu.
 `;
+
+export const SIMPLE_SPLITTER_PANES: ISplitterPane[] = [
+  {
+    name: 'Pane 1',
+    splitters: [
+      {
+        layoutKey: 'row-1',
+        orientation: 'bottom',
+        min: 0,
+        max: 2
+      },
+      {
+        layoutKey: 'column-1',
+        orientation: 'end',
+        min: 0,
+        max: 2
+      }
+    ]
+  },
+  {
+    name: 'Pane 2',
+    splitters: [
+      {
+        layoutKey: 'row-1',
+        orientation: 'bottom',
+        min: 0,
+        max: 2
+      }
+    ]
+  },
+  {
+    name: 'Pane 3',
+    splitters: [
+      {
+        layoutKey: 'column-1',
+        orientation: 'end',
+        min: 0,
+        max: 2
+      }
+    ]
+  },
+  {
+    name: 'Pane 4',
+    splitters: []
+  }
+];
