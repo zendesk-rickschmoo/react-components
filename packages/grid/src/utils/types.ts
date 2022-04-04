@@ -5,7 +5,7 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import { HTMLProps } from 'react';
+import { HTMLAttributes } from 'react';
 import { IUseSplitterProps } from '@zendeskgarden/container-splitter';
 
 export type ALIGN_ITEMS = 'start' | 'end' | 'center' | 'baseline' | 'stretch';
@@ -82,7 +82,7 @@ export interface ISplitterContext {
   pixelsPerFr: { rows: number; columns: number };
 }
 
-export interface ISplitterProps extends HTMLProps<any> {
+export interface ISplitterProps extends HTMLAttributes<HTMLDivElement> {
   layoutKey: string;
   min: number;
   max: number;
