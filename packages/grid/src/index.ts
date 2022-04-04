@@ -13,10 +13,6 @@ export { PaneProvider } from './elements/splitter/PaneProvider';
 export { Pane } from './elements/splitter/Pane';
 export { default as useSplitterContext, SplitterContext } from './utils/useSplitterContext';
 
-export type { IPaneProvider, IPaneProviderReturnProps } from './elements/splitter/PaneProvider';
-export type { ISplitterProps } from './elements/splitter/Splitter';
-export type { ISplitterContext } from './utils/useSplitterContext';
-
 export {
   ALIGN_ITEMS as ARRAY_ALIGN_ITEMS,
   ALIGN_SELF as ARRAY_ALIGN_SELF,
@@ -42,3 +38,10 @@ export type {
   Space as SPACE,
   Wrap as WRAP
 } from './types';
+
+export type {
+  IPaneProvider,
+  IPaneProviderReturnProps,
+  ISplitterProps,
+  ISplitterContext
+} from './utils/types';

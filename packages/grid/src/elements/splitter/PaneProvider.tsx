@@ -6,24 +6,9 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { SplitterContext } from '../../utils/useSplitterContext';
-import { DIMENSIONS, UNITS } from '../../utils/types';
-export interface IPaneProvider {
-  totalPanesWidth: number;
-  totalPanesHeight: number;
-  defaultRowValues?: Record<string, number>;
-  defaultColumnValues?: Record<string, number>;
-  rowValues?: Record<string, number>;
-  columnValues?: Record<string, number>;
-  onChange?: (rowValues: Record<string, number>, columnValues: Record<string, number>) => void;
-  children?: any;
-}
-
-export interface IPaneProviderReturnProps {
-  getLayoutValue: (dimension: DIMENSIONS, key: string, units?: UNITS) => number;
-  getGridTemplateRows: (units?: UNITS) => string;
-  getGridTemplateColumns: (units?: UNITS) => string;
-}
+import { DIMENSIONS, UNITS, IPaneProvider } from '../../utils/types';
 
 export const getFr = (pixels: number, totalFractions: number, totalDimension: number) => {
   const pixelsPerFraction = totalDimension / totalFractions;
@@ -283,7 +268,7 @@ export const PaneProvider = ({
 
   return (
     <SplitterContext.Provider value={splitterContext}>
-      {children({
+      {children?.({
         getLayoutValue,
         getGridTemplateColumns,
         getGridTemplateRows
@@ -293,3 +278,14 @@ export const PaneProvider = ({
 };
 
 PaneProvider.displayName = 'PaneProvider';
+
+PaneProvider.propTypes = {
+  totalPanesWidth: PropTypes.number.isRequired,
+  totalPanesHeight: PropTypes.number.isRequired,
+  defaultRowValues: PropTypes.object,
+  defaultColumnValues: PropTypes.object,
+  rowValues: PropTypes.object,
+  columnValues: PropTypes.object,
+  onChange: PropTypes.func,
+  children: PropTypes.func
+};
