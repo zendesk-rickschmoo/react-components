@@ -17,10 +17,6 @@ export type { IColProps } from './elements/Col';
 export type { IGridProps } from './elements/Grid';
 export type { IRowProps } from './elements/Row';
 
-export type { IPaneProvider, IPaneProviderReturnProps } from './elements/splitter/PaneProvider';
-export type { ISplitterProps } from './elements/splitter/Splitter';
-export type { ISplitterContext } from './utils/useSplitterContext';
-
 export {
   ARRAY_ALIGN_ITEMS,
   ARRAY_ALIGN_SELF,
@@ -40,5 +36,9 @@ export type {
   GRID_NUMBER,
   BREAKPOINT,
   SPACE,
-  WRAP
+  WRAP,
+  IPaneProvider,
+  IPaneProviderReturnProps,
+  ISplitterProps,
+  ISplitterContext
 } from './utils/types';

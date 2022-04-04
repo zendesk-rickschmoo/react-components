@@ -5,34 +5,22 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { useContext, useEffect, HTMLProps } from 'react';
+import React, { useContext, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { ThemeContext } from 'styled-components';
 import {
   useSplitter,
   SplitterOrientation,
   SplitterType,
-  SplitterPosition,
-  IUseSplitterProps
+  SplitterPosition
 } from '@zendeskgarden/container-splitter';
-import { ISplitterContext, SplitterContext } from '../../utils/useSplitterContext';
+import { SplitterContext } from '../../utils/useSplitterContext';
 import { PaneContext } from '../../utils/usePaneContext';
-import { ORIENTATION, DIMENSIONS } from '../../utils/types';
+import { ARRAY_ORIENTATION, DIMENSIONS, ISplitterProps } from '../../utils/types';
 
 import { StyledPaneItem } from '../../styled/splitter/StyledPaneItem';
 import { StyledSeparatorContainer } from '../../styled/splitter/StyledSeparatorContainer';
 import { StyledSeparator } from '../../styled/splitter/StyledSeparator';
-export interface ISplitterProps extends HTMLProps<any> {
-  layoutKey: string;
-  min: number;
-  max: number;
-  orientation?: ORIENTATION;
-  isLeading?: boolean;
-  isTrailing?: boolean;
-  rtl?: boolean;
-  environment?: IUseSplitterProps['environment'];
-  isFixed?: boolean;
-  splitterContext?: ISplitterContext;
-}
 
 const orientationToPosition = {
   start: SplitterPosition.TRAILS,
@@ -143,3 +131,15 @@ Splitter.defaultProps = {
 };
 
 Splitter.displayName = 'Pane.Splitter';
+
+Splitter.propTypes = {
+  layoutKey: PropTypes.string.isRequired,
+  min: PropTypes.number.isRequired,
+  max: PropTypes.number.isRequired,
+  orientation: PropTypes.oneOf(ARRAY_ORIENTATION),
+  isLeading: PropTypes.bool,
+  isTrailing: PropTypes.bool,
+  environment: PropTypes.object,
+  isFixed: PropTypes.bool,
+  splitterContext: PropTypes.object
+};
