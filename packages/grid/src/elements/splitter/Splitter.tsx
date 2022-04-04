@@ -5,7 +5,7 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeContext } from 'styled-components';
 import {
@@ -18,9 +18,7 @@ import { SplitterContext } from '../../utils/useSplitterContext';
 import { PaneContext } from '../../utils/usePaneContext';
 import { ARRAY_ORIENTATION, DIMENSIONS, ISplitterProps } from '../../utils/types';
 
-import { StyledPaneItem } from '../../styled/splitter/StyledPaneItem';
-import { StyledSeparatorContainer } from '../../styled/splitter/StyledSeparatorContainer';
-import { StyledSeparator } from '../../styled/splitter/StyledSeparator';
+import { StyledPaneItem, StyledSeparatorContainer, StyledSeparator } from '../../styled';
 
 const orientationToPosition = {
   start: SplitterPosition.TRAILS,
@@ -43,86 +41,91 @@ const orientationToDimension = {
   bottom: 'rows'
 };
 
-export const Splitter = ({
-  layoutKey,
-  min,
-  max,
-  orientation,
-  isFixed,
-  isLeading,
-  isTrailing,
-  environment,
-  splitterContext: customContext,
-  ...props
-}: ISplitterProps) => {
-  const parentContext = useContext(SplitterContext);
-  const paneContext = useContext(PaneContext);
-  const themeContext = useContext(ThemeContext);
-  const splitterContext = customContext ? customContext : parentContext;
-  let position;
-
-  if (isLeading === true) {
-    position = SplitterPosition.LEADS;
-  } else if (isTrailing === true) {
-    position = SplitterPosition.TRAILS;
-  } else {
-    position = orientationToPosition[orientation!];
-  }
-
-  const splitterOrientation = paneToSplitterOrientation[orientation!];
-
-  const pixelsPerFr =
-    splitterContext.pixelsPerFr[orientationToDimension[orientation!] as DIMENSIONS];
-
-  const { getSeparatorProps, getPrimaryPaneProps } = useSplitter({
-    type: isFixed ? SplitterType.FIXED : SplitterType.VARIABLE,
-    orientation: splitterOrientation,
-    position,
-    min: min * pixelsPerFr,
-    max: max * pixelsPerFr,
-    rtl: themeContext.rtl,
-    environment: environment!,
-    onChange: valueNow => {
-      switch (orientationToDimension[orientation!]) {
-        case 'rows':
-          splitterContext.setRowValue(orientation === 'top', layoutKey, valueNow / pixelsPerFr);
-          break;
-        case 'columns':
-          splitterContext.setColumnValue(
-            orientation === 'start',
-            layoutKey,
-            valueNow / pixelsPerFr
-          );
-          break;
-      }
-    },
-    valueNow: splitterContext.getLayoutValue(
-      orientationToDimension[orientation!] as DIMENSIONS,
+export const Splitter = forwardRef<HTMLDivElement, ISplitterProps>(
+  (
+    {
       layoutKey,
-      'px'
-    )
-  });
+      min,
+      max,
+      orientation,
+      isFixed,
+      isLeading,
+      isTrailing,
+      environment,
+      splitterContext: customContext,
+      ...props
+    },
+    ref
+  ) => {
+    const parentContext = useContext(SplitterContext);
+    const paneContext = useContext(PaneContext);
+    const themeContext = useContext(ThemeContext);
+    const splitterContext = customContext ? customContext : parentContext;
+    let position;
 
-  useEffect(() => {
-    if (!paneContext.id) {
-      paneContext.setId(getPrimaryPaneProps().id);
+    if (isLeading === true) {
+      position = SplitterPosition.LEADS;
+    } else if (isTrailing === true) {
+      position = SplitterPosition.TRAILS;
+    } else {
+      position = orientationToPosition[orientation!];
     }
-  }, [paneContext, getPrimaryPaneProps]);
 
-  const isHorizontal = paneToSplitterOrientation[orientation!] === SplitterOrientation.HORIZONTAL;
+    const splitterOrientation = paneToSplitterOrientation[orientation!];
 
-  const separatorProps = getSeparatorProps({
-    'aria-controls': paneContext.id
-  });
+    const pixelsPerFr =
+      splitterContext.pixelsPerFr[orientationToDimension[orientation!] as DIMENSIONS];
 
-  return (
-    <StyledPaneItem paneOrientation={orientation}>
-      <StyledSeparatorContainer isHorizontal={isHorizontal} {...separatorProps} {...props}>
-        <StyledSeparator isHorizontal={isHorizontal} />
-      </StyledSeparatorContainer>
-    </StyledPaneItem>
-  );
-};
+    const { getSeparatorProps, getPrimaryPaneProps } = useSplitter({
+      type: isFixed ? SplitterType.FIXED : SplitterType.VARIABLE,
+      orientation: splitterOrientation,
+      position,
+      min: min * pixelsPerFr,
+      max: max * pixelsPerFr,
+      rtl: themeContext.rtl,
+      environment: environment!,
+      onChange: valueNow => {
+        switch (orientationToDimension[orientation!]) {
+          case 'rows':
+            splitterContext.setRowValue(orientation === 'top', layoutKey, valueNow / pixelsPerFr);
+            break;
+          case 'columns':
+            splitterContext.setColumnValue(
+              orientation === 'start',
+              layoutKey,
+              valueNow / pixelsPerFr
+            );
+            break;
+        }
+      },
+      valueNow: splitterContext.getLayoutValue(
+        orientationToDimension[orientation!] as DIMENSIONS,
+        layoutKey,
+        'px'
+      )
+    });
+
+    useEffect(() => {
+      if (!paneContext.id) {
+        paneContext.setId(getPrimaryPaneProps().id);
+      }
+    }, [paneContext, getPrimaryPaneProps]);
+
+    const isHorizontal = paneToSplitterOrientation[orientation!] === SplitterOrientation.HORIZONTAL;
+
+    const separatorProps = getSeparatorProps({
+      'aria-controls': paneContext.id
+    });
+
+    return (
+      <StyledPaneItem ref={ref} paneOrientation={orientation}>
+        <StyledSeparatorContainer isHorizontal={isHorizontal} {...separatorProps} {...props}>
+          <StyledSeparator isHorizontal={isHorizontal} />
+        </StyledSeparatorContainer>
+      </StyledPaneItem>
+    );
+  }
+);
 
 Splitter.defaultProps = {
   orientation: 'end',
@@ -139,7 +142,7 @@ Splitter.propTypes = {
   orientation: PropTypes.oneOf(ARRAY_ORIENTATION),
   isLeading: PropTypes.bool,
   isTrailing: PropTypes.bool,
-  environment: PropTypes.object,
+  environment: PropTypes.any,
   isFixed: PropTypes.bool,
-  splitterContext: PropTypes.object
+  splitterContext: PropTypes.any
 };

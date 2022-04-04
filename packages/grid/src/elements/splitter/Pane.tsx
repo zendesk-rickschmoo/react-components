@@ -7,8 +7,7 @@
 
 import React, { useState, useMemo, HTMLAttributes, forwardRef } from 'react';
 import { Splitter } from './Splitter';
-import { StyledPane } from '../../styled/splitter/StyledPane';
-import { StyledPaneItem } from '../../styled/splitter/StyledPaneItem';
+import { StyledPaneItem, StyledPane } from '../../styled';
 import { PaneContext } from '../../utils/usePaneContext';
 
 const PaneComponent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
