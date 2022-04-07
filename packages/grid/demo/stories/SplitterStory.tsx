@@ -18,9 +18,8 @@ import {
 import { ISplitterPane } from './types';
 
 interface IArgs extends IPaneProvider {
-  handleValueChange: IPaneProvider['onChange'];
-  hasOverflow: boolean;
-  textContent: string;
+  handleValueChange?: IPaneProvider['onChange'];
+  text: string[];
   panes: [ISplitterPane];
 }
 
@@ -29,10 +28,11 @@ export const SplitterStory: Story<IArgs> = ({
   totalPanesHeight,
   columnValues,
   rowValues,
+  defaultColumnValues,
+  defaultRowValues,
   handleValueChange,
   panes,
-  hasOverflow,
-  textContent
+  text 
 }) => {
   const { ref, width = 1, height = 1 } = useResizeObserver<HTMLDivElement>();
   const themeContext = useContext(ThemeContext);
@@ -43,6 +43,8 @@ export const SplitterStory: Story<IArgs> = ({
       totalPanesHeight={totalPanesWidth ? totalPanesHeight : height}
       columnValues={columnValues}
       rowValues={rowValues}
+      defaultColumnValues={defaultColumnValues}
+      defaultRowValues={defaultRowValues}
       onChange={handleValueChange}
     >
       {({ getGridTemplateColumns, getGridTemplateRows }: IPaneProviderReturnProps) => {
@@ -58,16 +60,16 @@ export const SplitterStory: Story<IArgs> = ({
               gridTemplateColumns: getGridTemplateColumns()
             }}
           >
-            {panes.map(pane => (
+            {panes.map((pane, index) => (
               <Pane key={pane.name}>
                 <Pane.Content
                   style={{
-                    overflowY: hasOverflow ? 'scroll' : undefined
+                    overflow: 'auto'
                   }}
                 >
-                  <div style={{ height: hasOverflow ? '0px' : undefined }}>
+                  <div style={{ height: '0px' }}>
                     <p>{pane.name}</p>
-                    {hasOverflow && textContent && <p>{textContent}</p>}
+                    <p>{text[index]}</p>
                   </div>
                 </Pane.Content>
                 {pane.splitters.map(splitter => (

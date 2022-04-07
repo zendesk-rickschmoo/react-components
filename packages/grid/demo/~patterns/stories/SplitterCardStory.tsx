@@ -15,9 +15,16 @@ import {
   Pane,
   IPaneProviderReturnProps,
   useSplitterContext,
-  ISplitterContext
+  ISplitterContext,
+  Row as GridRow,
+  Col
 } from '@zendeskgarden/react-grid';
+import { Field, Label, Input, InputGroup } from '@zendeskgarden/react-forms';
+import { Body, Cell, Head, HeaderCell, HeaderRow, Row as TableRow, Table } from '@zendeskgarden/react-tables';
+import { Paragraph, SM, LG } from '@zendeskgarden/react-typography';
+import { Button } from '@zendeskgarden/react-buttons';
 import { ICardSplitterColumn } from './types';
+import { VEGGIE_IPSUM } from '../../stories/data';
 
 interface IArgs extends IPaneProvider {
   hasOverflow: boolean;
@@ -31,22 +38,128 @@ interface IColumnGridProps {
 }
 
 interface IRowProps {
+  columnIndex: number;
   columnContext: ISplitterContext;
   panes: ICardSplitterColumn['panes'];
 }
 
 interface IRowGridProps {
+  columnIndex: number;
   columnContext: ISplitterContext;
   panes: ICardSplitterColumn['panes'];
   resizeRef: React.RefCallback<any>;
 }
+
+const FakeContent = ({ index }: { index: number }) => {
+  switch(index % 4) {
+    case 0:
+      return (
+        <>
+        <GridRow justifyContent="start">
+          <Col>
+            <Field>
+              <Label>Plant</Label>
+              <Input />
+            </Field>
+          </Col>
+        </GridRow>
+        <GridRow justifyContent="start">
+          <Col>
+            <Field>
+              <Label>Animal</Label>
+              <Input />
+            </Field>
+          </Col>
+        </GridRow>
+        </>
+      );
+    case 1:
+      return (
+        <>
+          <GridRow justifyContent="start">
+            <Col>
+              <Field>
+                <Label>Plant</Label>
+                <Input />
+              </Field>
+            </Col>
+          </GridRow>
+          <GridRow justifyContent="start">
+            <Col>
+              <SM>
+                <Paragraph>{VEGGIE_IPSUM[0]}</Paragraph>
+              </SM>
+            </Col>
+          </GridRow>
+        </>
+      );
+    case 2:
+      return (
+        <GridRow justifyContent="start">
+          <Col>
+            <Field>
+              <Label>Invoice number</Label>
+              <InputGroup>
+                <Input value="GDN10136H74NK-0011" readOnly />
+                <Button focusInset isNeutral>
+                  Copy
+                </Button>
+              </InputGroup>
+            </Field>
+          </Col>
+        </GridRow>
+      );
+    case 3:
+      return (
+        <Table style={{ minWidth: 100 }}>
+          <Head>
+            <HeaderRow>
+              <HeaderCell>Fruit</HeaderCell>
+              <HeaderCell>Sun exposure</HeaderCell>
+              <HeaderCell>Soil</HeaderCell>
+            </HeaderRow>
+          </Head>
+          <Body>
+            <TableRow>
+              <Cell>Raspberries</Cell>
+              <Cell>Partial shade</Cell>
+              <Cell>Moist and slightly acidic</Cell>
+            </TableRow>
+            <TableRow>
+              <Cell>Strawberries</Cell>
+              <Cell>Full sun</Cell>
+              <Cell>Medium moisture</Cell>
+            </TableRow>
+            <TableRow>
+              <Cell>Grapes</Cell>
+              <Cell>Full sun</Cell>
+              <Cell>Rich and well draining</Cell>
+            </TableRow>
+            <TableRow>
+              <Cell>Cherries</Cell>
+              <Cell>Partial sun</Cell>
+              <Cell>Rich and well draining</Cell>
+            </TableRow>
+            <TableRow>
+              <Cell>Tomatoes</Cell>
+              <Cell>Partial shade</Cell>
+              <Cell>Well draining</Cell>
+            </TableRow>
+          </Body>
+        </Table>
+      );
+    default:
+      return null;
+  }
+};
 
 const RowGrid = ({
   resizeRef,
   panes,
   getGridTemplateRows,
   getGridTemplateColumns,
-  columnContext
+  columnContext,
+  columnIndex
 }: IRowGridProps &
   Pick<IPaneProviderReturnProps, 'getGridTemplateColumns' | 'getGridTemplateRows'>) => {
   const themeContext = useContext(ThemeContext);
@@ -64,23 +177,26 @@ const RowGrid = ({
         gridTemplateColumns: getGridTemplateColumns()
       }}
     >
-      {panes.map(pane => (
+      {panes.map((pane, index) => (
         <Pane key={pane.name}>
-          <Pane.Content>
-            <p>{pane.name}</p>
+          <Pane.Content style={{ padding: '1em', overflow: 'auto' }}>
+            <div style={{ height: 0 }}>
+              <LG tag="h2">{pane.name}</LG>
+              <FakeContent index={columnIndex + index + 1} />
+            </div>
           </Pane.Content>
-          {pane.splitters.map(({ hasParentContext, ...splitter }) => {
+          {pane.splitters.map(({ hasParentContext, ...splitter }, splitterIndex) => {
             if (hasParentContext) {
               return (
                 <Pane.Splitter
-                  key={splitter.layoutKey}
+                  key={`${pane.name}-${splitter.layoutKey}-${splitterIndex}`}
                   splitterContext={columnContext}
                   {...splitter}
                 />
               );
             }
 
-            return <Pane.Splitter key={splitter.layoutKey} {...splitter} />;
+            return <Pane.Splitter key={`${pane.name}-${splitter.layoutKey}-${splitterIndex}`} {...splitter} />;
           })}
         </Pane>
       ))}
@@ -88,7 +204,7 @@ const RowGrid = ({
   );
 };
 
-const Row = ({ columnContext, panes }: IRowProps) => {
+const Row = ({ columnIndex, columnContext, panes }: IRowProps) => {
   const { ref, width = 1, height = 1 } = useResizeObserver<HTMLDivElement>();
 
   return (
@@ -105,6 +221,7 @@ const Row = ({ columnContext, panes }: IRowProps) => {
         return (
           <RowGrid
             columnContext={columnContext}
+            columnIndex={columnIndex}
             resizeRef={ref}
             panes={panes}
             getGridTemplateColumns={getGridTemplateColumns}
@@ -139,10 +256,10 @@ const ColumnGrid = ({
         gridTemplateColumns: getGridTemplateColumns()
       }}
     >
-      {columns.map(column => (
+      {columns.map((column, columnIndex) => (
         <Pane key={column.name}>
           <Pane.Content>
-            <Row panes={column.panes} columnContext={splitterContext} />
+            <Row panes={column.panes} columnIndex={columnIndex} columnContext={splitterContext} />
           </Pane.Content>
         </Pane>
       ))}

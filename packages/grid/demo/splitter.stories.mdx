@@ -9,6 +9,35 @@ import { VEGGIE_IPSUM, SIMPLE_SPLITTER_PANES } from './stories/data';
   title="Packages/Grid/Splitter"
   component={PaneProvider}
   subcomponents={{ Pane, 'Pane.Content': Pane.Content, 'Pane.Splitter': Pane.Splitter }}
+  args={{
+    columnValues: {
+      'column-1': 1,
+      'column-2': 1
+    },
+    rowValues: {
+      'row-1': 1,
+      'row-2': 1
+    },
+    defaultColumnValues: {
+      'column-1': 1,
+      'column-2': 1
+    },
+    defaultRowValues: {
+      'row-1': 1,
+      'row-2': 1
+    },
+    panes: SIMPLE_SPLITTER_PANES,
+  }}
+  argTypes={{
+    panes: { name: 'panes', table: { category: 'Story' } },
+  }}
+  parameters={{
+    design: {
+      allowFullscreen: true,
+      type: 'figma',
+      url: ''
+    }
+  }}
 />
 
 # API
@@ -17,48 +46,31 @@ import { VEGGIE_IPSUM, SIMPLE_SPLITTER_PANES } from './stories/data';
 
 # Demo
 
+## Uncontrolled
+
 <Canvas>
   <Story
-    name="Splitter"
-    args={{
-      columnValues: {
-        'column-1': 1,
-        'column-2': 1
-      },
-      rowValues: {
-        'row-1': 1,
-        'row-2': 1
-      },
-      defaultColumnValues: {
-        'column-1': 1,
-        'column-2': 1
-      },
-      defaultRowValues: {
-        'row-1': 1,
-        'row-2': 1
-      },
-      panes: SIMPLE_SPLITTER_PANES,
-      hasOverflow: false,
-      textContent: VEGGIE_IPSUM
-    }}
-    argTypes={{
-      panes: { name: 'children', table: { category: 'Story' } },
-      textContent: { name: 'textContent', table: { category: 'Story' } },
-      hasOverflow: { name: 'Overflow', table: { category: 'Story' } }
-    }}
-    parameters={{
-      design: {
-        allowFullscreen: true,
-        type: 'figma',
-        url: ''
-      }
-    }}
+    name="Uncontrolled"
+    args={{ columnValues: undefined, rowValues: undefined }}
+    argTypes={{ columnValues: { control: false }, rowValues: { control: false } }}
+  >
+    {args => <SplitterStory {...args} text={VEGGIE_IPSUM} />}
+  </Story>
+</Canvas>
+
+## Controlled
+
+<Canvas>
+  <Story
+    name="Controlled"
+    args={{ defaultColumnValues: undefined, defaultRowValues: undefined }}
+    argTypes={{ defaultColumnValues: { control: false }, defaultRowValues: { control: false } }}
   >
     {args => {
       const updateArgs = useArgs()[1];
       const handleValueChange = (rowValues, columnValues) =>
         updateArgs({ rowValues, columnValues });
-      return <SplitterStory {...args} handleValueChange={handleValueChange} />;
+      return <SplitterStory {...args} handleValueChange={handleValueChange} text={VEGGIE_IPSUM} />;
     }}
   </Story>
 </Canvas>
