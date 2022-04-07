@@ -51,18 +51,47 @@ export type DIMENSIONS = 'rows' | 'columns';
 export type UNITS = 'px' | 'fr';
 
 export interface IPaneProviderReturnProps {
+  /** Gets layout value by dimension and key. Accepts optional units. 
+   * 
+   * @param {DIMENSIONS} "row" or "column" dimension
+   * @param {string} Sets the splitter key to get a layout value for
+   * @param {UNITS} [units] Specifies the dimension unit for the return value
+   * 
+   */
   getLayoutValue: (dimension: DIMENSIONS, key: string, units?: UNITS) => number;
+  /** Gets grid template rows track. Accepts optional units. 
+   * 
+   * @param {UNITS} [units] Specifies the dimension unit for the return value
+   * 
+   */
   getGridTemplateRows: (units?: UNITS) => string;
+  /** Gets grid template columns track. Accepts optional units. 
+   * 
+   * @param {UNITS} [units] Specifies the dimension unit for the return value
+   * 
+   */
   getGridTemplateColumns: (units?: UNITS) => string;
 }
 
 export interface IPaneProvider {
+  /** Provides the total width, in px units, of all panes in the layout */
   totalPanesWidth: number;
+  /** Provides the total height, in px units, of all panes in the layout */
   totalPanesHeight: number;
+  /** Defines default row values, in fr units, for an uncontrolled layout. The values are keyed by splitter. */
   defaultRowValues?: Record<string, number>;
+  /** Defines default column values, in fr units, for an uncontrolled layout. The values are keyed by splitter. */
   defaultColumnValues?: Record<string, number>;
+  /** Defines row values, in fr units, for a controlled layout. The values are keyed by splitter. */
   rowValues?: Record<string, number>;
+  /** Defines column values, in fr units, for a controlled layout. The values are keyed by splitter. */
   columnValues?: Record<string, number>;
+  /** 
+   * Handles splitter position changes 
+   * 
+   * @param {Record<string, number>} The updated row values
+   * @param {Record<string, number>} The updated column values
+   */
   onChange?: (rowValues: Record<string, number>, columnValues: Record<string, number>) => void;
   children?: ({
     getLayoutValue,
@@ -83,13 +112,20 @@ export interface ISplitterContext {
 }
 
 export interface ISplitterProps extends HTMLAttributes<HTMLDivElement> {
+  /** Specifies the splitter key */
   layoutKey: string;
+  /** Sets a minimum, in fr units, for splitter position */
   min: number;
+  /** Sets a maximum, in fr units, for splitter position */
   max: number;
+  /** Determines splitter orientation within a pane */
   orientation?: ORIENTATION;
+  /** Specifies whether splitter leads the primary pane */
   isLeading?: boolean;
+  /** Specifies whether splitter trails the primary pane */
   isTrailing?: boolean;
+  /** A browser window environment to attach events to */
   environment?: IUseSplitterProps['environment'];
+  /** Specifies whether a separator behaves in fixed or variable mode */
   isFixed?: boolean;
-  splitterContext?: ISplitterContext;
 }

@@ -14,11 +14,11 @@ import {
   SplitterType,
   SplitterPosition
 } from '@zendeskgarden/container-splitter';
-import { SplitterContext } from '../../utils/useSplitterContext';
-import { PaneContext } from '../../utils/usePaneContext';
-import { ARRAY_ORIENTATION, DIMENSIONS, ISplitterProps } from '../../utils/types';
+import { SplitterContext } from '../../../utils/useSplitterContext';
+import { PaneContext } from '../../../utils/usePaneContext';
+import { ARRAY_ORIENTATION, DIMENSIONS, ISplitterProps } from '../../../utils/types';
 
-import { StyledPaneItem, StyledSeparatorContainer, StyledSeparator } from '../../styled';
+import { StyledPaneItem, StyledSeparatorContainer, StyledSeparator } from '../../../styled';
 
 const orientationToPosition = {
   start: SplitterPosition.TRAILS,
@@ -41,7 +41,7 @@ const orientationToDimension = {
   bottom: 'rows'
 };
 
-export const Splitter = forwardRef<HTMLDivElement, ISplitterProps>(
+const SplitterComponent = forwardRef<HTMLDivElement, ISplitterProps>(
   (
     {
       layoutKey,
@@ -52,15 +52,13 @@ export const Splitter = forwardRef<HTMLDivElement, ISplitterProps>(
       isLeading,
       isTrailing,
       environment,
-      splitterContext: customContext,
       ...props
     },
     ref
   ) => {
-    const parentContext = useContext(SplitterContext);
+    const splitterContext = useContext(SplitterContext);
     const paneContext = useContext(PaneContext);
     const themeContext = useContext(ThemeContext);
-    const splitterContext = customContext ? customContext : parentContext;
     let position;
 
     if (isLeading === true) {
@@ -127,15 +125,9 @@ export const Splitter = forwardRef<HTMLDivElement, ISplitterProps>(
   }
 );
 
-Splitter.defaultProps = {
-  orientation: 'end',
-  isFixed: false,
-  environment: window
-};
+SplitterComponent.displayName = 'Pane.Splitter';
 
-Splitter.displayName = 'Pane.Splitter';
-
-Splitter.propTypes = {
+SplitterComponent.propTypes = {
   layoutKey: PropTypes.string.isRequired,
   min: PropTypes.number.isRequired,
   max: PropTypes.number.isRequired,
@@ -144,5 +136,15 @@ Splitter.propTypes = {
   isTrailing: PropTypes.bool,
   environment: PropTypes.any,
   isFixed: PropTypes.bool,
-  splitterContext: PropTypes.any
 };
+
+SplitterComponent.defaultProps = {
+  orientation: 'end',
+  isFixed: false,
+  environment: window
+};
+
+/**
+ * @extends HTMLAttributes<HTMLDivElement>
+ */
+export const Splitter = SplitterComponent;

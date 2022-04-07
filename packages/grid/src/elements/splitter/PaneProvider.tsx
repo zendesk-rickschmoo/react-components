@@ -36,7 +36,7 @@ const convertToPixels = (values: Record<string, number>, pixelsPerFr: number) =>
   }, {} as Record<string, number>);
 };
 
-export const PaneProvider = ({
+const PaneProviderComponent = ({
   totalPanesWidth,
   totalPanesHeight,
   defaultRowValues,
@@ -277,9 +277,9 @@ export const PaneProvider = ({
   );
 };
 
-PaneProvider.displayName = 'PaneProvider';
+PaneProviderComponent.displayName = 'PaneProvider';
 
-PaneProvider.propTypes = {
+PaneProviderComponent.propTypes = {
   totalPanesWidth: PropTypes.number.isRequired,
   totalPanesHeight: PropTypes.number.isRequired,
   defaultRowValues: PropTypes.object,
@@ -289,3 +289,8 @@ PaneProvider.propTypes = {
   onChange: PropTypes.func,
   children: PropTypes.func
 };
+
+/**
+ * @extends IPaneProvider
+ */
+export const PaneProvider = PaneProviderComponent;

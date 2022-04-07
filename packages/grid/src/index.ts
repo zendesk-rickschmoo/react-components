@@ -11,7 +11,6 @@ export { Row } from './elements/Row';
 
 export { PaneProvider } from './elements/splitter/PaneProvider';
 export { Pane } from './elements/splitter/Pane';
-export { default as useSplitterContext, SplitterContext } from './utils/useSplitterContext';
 
 export {
   ALIGN_ITEMS as ARRAY_ALIGN_ITEMS,

@@ -6,8 +6,9 @@
  */
 
 import React, { useState, useMemo, HTMLAttributes, forwardRef } from 'react';
-import { Splitter } from './Splitter';
-import { StyledPaneItem, StyledPane } from '../../styled';
+import { Splitter } from './components/Splitter';
+import { Content } from './components/Content';
+import { StyledPane } from '../../styled';
 import { PaneContext } from '../../utils/usePaneContext';
 
 const PaneComponent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
@@ -38,9 +39,9 @@ PaneComponent.displayName = 'Pane';
  * @extends HTMLAttributes<HTMLDivElement>
  */
 export const Pane = PaneComponent as typeof PaneComponent & {
-  Content: typeof StyledPaneItem; // create new file proxy component
+  Content: typeof Content;
   Splitter: typeof Splitter;
 };
 
-Pane.Content = StyledPaneItem;
+Pane.Content = Content;
 Pane.Splitter = Splitter;
