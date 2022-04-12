@@ -43,17 +43,7 @@ const orientationToDimension = {
 
 const SplitterComponent = forwardRef<HTMLDivElement, ISplitterProps>(
   (
-    {
-      layoutKey,
-      min,
-      max,
-      orientation,
-      isFixed,
-      isLeading,
-      isTrailing,
-      environment,
-      ...props
-    },
+    { layoutKey, min, max, orientation, isFixed, isLeading, isTrailing, environment, ...props },
     ref
   ) => {
     const splitterContext = useContext(SplitterContext);
@@ -116,7 +106,7 @@ const SplitterComponent = forwardRef<HTMLDivElement, ISplitterProps>(
     });
 
     return (
-      <StyledPaneItem ref={ref} paneOrientation={orientation}>
+      <StyledPaneItem data-test-id="splitter-pane-item" ref={ref} paneOrientation={orientation}>
         <StyledSeparatorContainer isHorizontal={isHorizontal} {...separatorProps} {...props}>
           <StyledSeparator isHorizontal={isHorizontal} />
         </StyledSeparatorContainer>
@@ -135,7 +125,7 @@ SplitterComponent.propTypes = {
   isLeading: PropTypes.bool,
   isTrailing: PropTypes.bool,
   environment: PropTypes.any,
-  isFixed: PropTypes.bool,
+  isFixed: PropTypes.bool
 };
 
 SplitterComponent.defaultProps = {

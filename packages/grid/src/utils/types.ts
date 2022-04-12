@@ -5,7 +5,7 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, RefObject } from 'react';
 import { IUseSplitterProps } from '@zendeskgarden/container-splitter';
 
 export type ALIGN_ITEMS = 'start' | 'end' | 'center' | 'baseline' | 'stretch';
@@ -51,24 +51,24 @@ export type DIMENSIONS = 'rows' | 'columns';
 export type UNITS = 'px' | 'fr';
 
 export interface IPaneProviderReturnProps {
-  /** Gets layout value by dimension and key. Accepts optional units. 
-   * 
+  /** Gets layout value by dimension and key. Accepts optional units.
+   *
    * @param {DIMENSIONS} "row" or "column" dimension
    * @param {string} Sets the splitter key to get a layout value for
    * @param {UNITS} [units] Specifies the dimension unit for the return value
-   * 
+   *
    */
   getLayoutValue: (dimension: DIMENSIONS, key: string, units?: UNITS) => number;
-  /** Gets grid template rows track. Accepts optional units. 
-   * 
+  /** Gets grid template rows track. Accepts optional units.
+   *
    * @param {UNITS} [units] Specifies the dimension unit for the return value
-   * 
+   *
    */
   getGridTemplateRows: (units?: UNITS) => string;
-  /** Gets grid template columns track. Accepts optional units. 
-   * 
+  /** Gets grid template columns track. Accepts optional units.
+   *
    * @param {UNITS} [units] Specifies the dimension unit for the return value
-   * 
+   *
    */
   getGridTemplateColumns: (units?: UNITS) => string;
 }
@@ -86,9 +86,9 @@ export interface IPaneProvider {
   rowValues?: Record<string, number>;
   /** Defines column values, in fr units, for a controlled layout. The values are keyed by splitter. */
   columnValues?: Record<string, number>;
-  /** 
-   * Handles splitter position changes 
-   * 
+  /**
+   * Handles splitter position changes
+   *
    * @param {Record<string, number>} The updated row values
    * @param {Record<string, number>} The updated column values
    */

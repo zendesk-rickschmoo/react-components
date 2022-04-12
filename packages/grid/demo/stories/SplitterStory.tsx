@@ -32,7 +32,7 @@ export const SplitterStory: Story<IArgs> = ({
   defaultRowValues,
   handleValueChange,
   panes,
-  text 
+  text
 }) => {
   const { ref, width = 1, height = 1 } = useResizeObserver<HTMLDivElement>();
   const themeContext = useContext(ThemeContext);
