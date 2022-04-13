@@ -13,7 +13,7 @@ import { StyledSeparator } from './StyledSeparator';
 const COMPONENT_ID = 'splitter.separator_container';
 
 interface IStyledSeparatorContainerProps {
-  isHorizontal: boolean;
+  isHorizontal?: boolean;
 }
 
 const sizeStyles = ({
