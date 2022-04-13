@@ -41,6 +41,22 @@ class ExtendedMouseEvent extends MouseEvent implements MouseEventInit {
   }
 }
 
+// JSDom does not support clientWidth or clientHeight and we must mock it to test the inverted position calculation for position leads mode
+const windowObjectMock = {
+  scrollX: window.scrollX,
+  scrollY: window.scrollY,
+  document: {
+    addEventListener: document.addEventListener.bind(document),
+    removeEventListener: document.removeEventListener.bind(document),
+    body: {
+      addEventListener: document.body.addEventListener.bind(document.body),
+      removeEventListener: document.body.removeEventListener.bind(document.body),
+      clientWidth: 1000,
+      clientHeight: 500
+    }
+  }
+};
+
 const UncontrolledTestSplitter = () => {
   return (
     <PaneProvider
@@ -62,13 +78,14 @@ const UncontrolledTestSplitter = () => {
         >
           <Pane>
             <Content>Pane 1</Content>
-            <Splitter data-test-id="pane-1-end" layoutKey="a" min={0} max={2} orientation="end" />
+            <Splitter data-test-id="pane-1-end" isTrailing layoutKey="a" min={0} max={2} orientation="end" environment={windowObjectMock} />
             <Splitter
               data-test-id="pane-1-bottom"
               layoutKey="c"
               min={0}
               max={2}
               orientation="bottom"
+              environment={windowObjectMock}
             />
           </Pane>
           <Pane>
@@ -79,6 +96,8 @@ const UncontrolledTestSplitter = () => {
               min={0}
               max={2}
               orientation="start"
+              isLeading
+              environment={windowObjectMock}
             />
             <Splitter
               data-test-id="pane-2-bottom"
@@ -86,12 +105,13 @@ const UncontrolledTestSplitter = () => {
               min={0}
               max={2}
               orientation="bottom"
+              environment={windowObjectMock}
             />
           </Pane>
           <Pane>
             <Content>Pane 3</Content>
-            <Splitter data-test-id="pane-3-end" layoutKey="a" min={0} max={2} orientation="end" />
-            <Splitter data-test-id="pane-3-top" layoutKey="d" min={0} max={2} orientation="top" />
+            <Splitter data-test-id="pane-3-end" layoutKey="a" min={0} max={2} orientation="end" environment={windowObjectMock} />
+            <Splitter data-test-id="pane-3-top" layoutKey="d" min={0} max={2} orientation="top" environment={windowObjectMock} />
           </Pane>
           <Pane>
             <Content>Pane 4</Content>
@@ -101,8 +121,10 @@ const UncontrolledTestSplitter = () => {
               min={0}
               max={2}
               orientation="start"
+              isLeading
+              environment={windowObjectMock}
             />
-            <Splitter data-test-id="pane-4-top" layoutKey="d" min={0} max={2} orientation="top" />
+            <Splitter data-test-id="pane-4-top" layoutKey="d" min={0} max={2} orientation="top" environment={windowObjectMock} />
           </Pane>
         </div>
       )}
@@ -136,13 +158,14 @@ const ControlledTestSplitter = ({
         >
           <Pane>
             <Content>Pane 1</Content>
-            <Splitter data-test-id="pane-1-end" layoutKey="a" min={0} max={2} orientation="end" />
+            <Splitter data-test-id="pane-1-end" isTrailing layoutKey="a" min={0} max={2} orientation="end" environment={windowObjectMock} />
             <Splitter
               data-test-id="pane-1-bottom"
               layoutKey="c"
               min={0}
               max={2}
               orientation="bottom"
+              environment={windowObjectMock}
             />
           </Pane>
           <Pane>
@@ -153,6 +176,8 @@ const ControlledTestSplitter = ({
               min={0}
               max={2}
               orientation="start"
+              isLeading
+              environment={windowObjectMock}
             />
             <Splitter
               data-test-id="pane-2-bottom"
@@ -160,12 +185,13 @@ const ControlledTestSplitter = ({
               min={0}
               max={2}
               orientation="bottom"
+              environment={windowObjectMock}
             />
           </Pane>
           <Pane>
             <Content>Pane 3</Content>
-            <Splitter data-test-id="pane-3-end" layoutKey="a" min={0} max={2} orientation="end" />
-            <Splitter data-test-id="pane-3-top" layoutKey="d" min={0} max={2} orientation="top" />
+            <Splitter data-test-id="pane-3-end" layoutKey="a" min={0} max={2} orientation="end" environment={windowObjectMock} />
+            <Splitter data-test-id="pane-3-top" layoutKey="d" min={0} max={2} orientation="top" environment={windowObjectMock} />
           </Pane>
           <Pane>
             <Content>Pane 4</Content>
@@ -175,8 +201,10 @@ const ControlledTestSplitter = ({
               min={0}
               max={2}
               orientation="start"
+              isLeading
+              environment={windowObjectMock}
             />
-            <Splitter data-test-id="pane-4-top" layoutKey="d" min={0} max={2} orientation="top" />
+            <Splitter data-test-id="pane-4-top" layoutKey="d" min={0} max={2} orientation="top" environment={windowObjectMock} />
           </Pane>
         </div>
       )}
@@ -383,13 +411,12 @@ describe('PaneProvider', () => {
       const separator = getByTestId('pane-1-end');
       const separatorComplement = getByTestId('pane-2-start');
 
-      // must mock left position for vertical and top position for horizontal for offset calculation
       separator.getBoundingClientRect = () => ({
         bottom: 0,
         height: 0,
         left: 500,
-        right: 0,
-        top: 500,
+        right: windowObjectMock.document.body.clientWidth - 500,
+        top: 0,
         width: 0,
         x: 0,
         y: 0,
@@ -399,8 +426,8 @@ describe('PaneProvider', () => {
         bottom: 0,
         height: 0,
         left: 500,
-        right: 0,
-        top: 500,
+        right: windowObjectMock.document.body.clientWidth - 500,
+        top: 0,
         width: 0,
         x: 0,
         y: 0,
@@ -421,9 +448,8 @@ describe('PaneProvider', () => {
       const separator = getByTestId('pane-1-bottom');
       const separatorComplement = getByTestId('pane-3-top');
 
-      // must mock left position for vertical and top position for horizontal for offset calculation
       separator.getBoundingClientRect = () => ({
-        bottom: 0,
+        bottom: windowObjectMock.document.body.clientHeight- 250,
         height: 0,
         left: 0,
         right: 0,
@@ -434,7 +460,7 @@ describe('PaneProvider', () => {
         toJSON: () => undefined
       });
       separatorComplement.getBoundingClientRect = () => ({
-        bottom: 0,
+        bottom: windowObjectMock.document.body.clientHeight - 250,
         height: 0,
         left: 0,
         right: 0,
@@ -451,6 +477,78 @@ describe('PaneProvider', () => {
 
       expect(separator).toHaveAttribute('aria-valuenow', '50');
       expect(separatorComplement).toHaveAttribute('aria-valuenow', '450');
+    });
+    it('moves column start based splitter', () => {
+      const { getByTestId } = render(<UncontrolledTestSplitter />);
+
+      const separator = getByTestId('pane-2-start');
+      const separatorComplement = getByTestId('pane-1-end');
+
+      separator.getBoundingClientRect = () => ({
+        bottom: 0,
+        height: 0,
+        left: 500,
+        right: windowObjectMock.document.body.clientWidth - 500,
+        top: 0,
+        width: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => undefined
+      });
+      separatorComplement.getBoundingClientRect = () => ({
+        bottom: 0,
+        height: 0,
+        left: 500,
+        right: windowObjectMock.document.body.clientWidth - 500,
+        top: 0,
+        width: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => undefined
+      });
+
+      fireEvent.mouseDown(separator);
+      fireEvent(document, new ExtendedMouseEvent('mousemove', { pageX: 600 }));
+      fireEvent.mouseUp(document);
+
+      expect(separator).toHaveAttribute('aria-valuenow', '400');
+      expect(separatorComplement).toHaveAttribute('aria-valuenow', '600');
+    });
+    it('moves row top based splitter', () => {
+      const { getByTestId } = render(<UncontrolledTestSplitter />);
+
+      const separator = getByTestId('pane-3-top');
+      const separatorComplement = getByTestId('pane-1-bottom');
+
+      separator.getBoundingClientRect = () => ({
+        bottom: windowObjectMock.document.body.clientHeight - 250,
+        top: 250,
+        height: 0,
+        left: 0,
+        right: 0,
+        width: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => undefined
+      });
+      separatorComplement.getBoundingClientRect = () => ({
+        bottom: windowObjectMock.document.body.clientHeight - 250,
+        top: 250,
+        left: 0,
+        right: 0,
+        height: 0,
+        width: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => undefined
+      });
+
+      fireEvent.mouseDown(separator);
+      fireEvent(document, new ExtendedMouseEvent('mousemove', { pageY: 400 }));
+      fireEvent.mouseUp(document);
+
+      expect(separator).toHaveAttribute('aria-valuenow', '100');
+      expect(separatorComplement).toHaveAttribute('aria-valuenow', '400');
     });
   });
 
@@ -486,13 +584,12 @@ describe('PaneProvider', () => {
 
       const separator = getByTestId('pane-1-end');
 
-      // must mock left position for vertical and top position for horizontal for offset calculation
       separator.getBoundingClientRect = () => ({
         bottom: 0,
         height: 0,
         left: 500,
-        right: 0,
-        top: 500,
+        right: windowObjectMock.document.body.clientWidth - 500,
+        top: 0,
         width: 0,
         x: 0,
         y: 0,
@@ -548,9 +645,8 @@ describe('PaneProvider', () => {
 
       const separator = getByTestId('pane-1-bottom');
 
-      // must mock left position for vertical and top position for horizontal for offset calculation
       separator.getBoundingClientRect = () => ({
-        bottom: 0,
+        bottom: windowObjectMock.document.body.clientHeight - 250,
         height: 0,
         left: 0,
         right: 0,
@@ -577,6 +673,65 @@ describe('PaneProvider', () => {
           "b": 1,
         }
       `);
+    });
+  });
+
+  describe('Splitter', () => {
+    it('should move in fixed mode', () => {
+      const { getByRole} = render(
+        <PaneProvider
+          totalPanesWidth={1000}
+          totalPanesHeight={500}
+          defaultColumnValues={{ a: 1, b: 1 }}
+          defaultRowValues={{}}
+        >
+          {({ getGridTemplateColumns }) => (
+            <div
+              style={{
+                direction: 'ltr',
+                display: 'grid',
+                width: '1000px',
+                height: '500px',
+                gridTemplateColumns: getGridTemplateColumns()
+              }}
+            >
+              <Pane>
+                <Content>Pane 1</Content>
+                <Splitter
+                  data-test-id="pane-1-end"
+                  isFixed
+                  layoutKey="a"
+                  min={0}
+                  max={2}
+                  orientation="end"
+                />
+              </Pane>
+              <Pane>
+                <Content>Pane 2</Content>
+              </Pane>
+            </div>
+          )}
+        </PaneProvider>
+      );
+
+      const separator = getByRole('separator');
+
+      separator.getBoundingClientRect = () => ({
+        bottom: 0,
+        height: 0,
+        left: 500,
+        right: windowObjectMock.document.body.clientWidth - 500,
+        top: 0,
+        width: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => undefined
+      });
+
+      fireEvent.mouseDown(separator);
+      fireEvent.mouseUp(document);
+
+      expect(separator).toHaveAttribute('aria-valuenow', '1000');
     });
   });
 });

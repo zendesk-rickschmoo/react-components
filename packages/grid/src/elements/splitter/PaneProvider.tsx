@@ -44,38 +44,28 @@ const PaneProviderComponent = ({
 
   const setRowsTrack = useCallback(
     (
-      values: Record<string, number> | ((state: Record<string, number>) => Record<string, number>)
+      values: (state: Record<string, number>) => Record<string, number>
     ) => {
-      if (isControlled) {
-        switch (typeof values) {
-          case 'function':
-            return onChange?.(values(rowsTrack), columnsTrack);
-          case 'object':
-            return onChange?.(values, columnsTrack);
-        }
+      if (onChange) {
+        return onChange(values(rowsTrack), columnsTrack);
       }
 
       return setRowState(values);
     },
-    [isControlled, onChange, setRowState, columnsTrack, rowsTrack]
+    [onChange, setRowState, columnsTrack, rowsTrack]
   );
 
   const setColumnsTrack = useCallback(
     (
-      values: Record<string, number> | ((state: Record<string, number>) => Record<string, number>)
+      values: ((state: Record<string, number>) => Record<string, number>)
     ) => {
-      if (isControlled) {
-        switch (typeof values) {
-          case 'function':
-            return onChange?.(rowsTrack, values(columnsTrack));
-          case 'object':
-            return onChange?.(rowsTrack, values);
-        }
+      if (onChange) {
+        return onChange(rowsTrack, values(columnsTrack));
       }
 
       return setColumnState(values);
     },
-    [isControlled, onChange, setColumnState, rowsTrack, columnsTrack]
+    [onChange, setColumnState, rowsTrack, columnsTrack]
   );
 
   const totalFractions = useMemo(
