@@ -10,27 +10,13 @@ import PropTypes from 'prop-types';
 import { SplitterContext } from '../../utils/useSplitterContext';
 import { DIMENSIONS, UNITS, IPaneProvider } from '../../utils/types';
 
-export const getFr = (pixels: number, totalFractions: number, totalDimension: number) => {
-  const pixelsPerFraction = totalDimension / totalFractions;
-
-  return pixels / pixelsPerFraction;
-};
-
-export const getPx = (frs: number, totalFractions: number, totalDimension: number) => {
-  const pixelsPerFraction = totalDimension / totalFractions;
-
-  return frs * pixelsPerFraction;
-};
-
 const getPixelsPerFr = (totalFrs: number, totalDimension: number) => {
   return totalDimension / totalFrs;
 };
 
 const convertToPixels = (values: Record<string, number>, pixelsPerFr: number) => {
   return Object.entries(values).reduce((prev, [key, value]) => {
-    if (value) {
-      prev[key] = value * pixelsPerFr;
-    }
+    prev[key] = value * pixelsPerFr;
 
     return prev;
   }, {} as Record<string, number>);
@@ -94,8 +80,8 @@ const PaneProviderComponent = ({
 
   const totalFractions = useMemo(
     () => ({
-      rows: Object.values(rowsTrack).reduce((prev, value) => (value ? value : 0) + prev, 0),
-      columns: Object.values(columnsTrack).reduce((prev, value) => (value ? value : 0) + prev, 0)
+      rows: Object.values(rowsTrack).reduce((prev, value) => value + prev, 0),
+      columns: Object.values(columnsTrack).reduce((prev, value) => value + prev, 0)
     }),
     [rowsTrack, columnsTrack]
   );
@@ -149,10 +135,6 @@ const PaneProviderComponent = ({
         const oldValue = rowsTrack[id];
         const stealFromIndex = rows[id] + indexTraversal;
 
-        if (stealFromIndex < 0 || stealFromIndex > rowArray.length - 1) {
-          return state;
-        }
-
         const stealFromKey = rowArray[stealFromIndex];
 
         const difference = oldValue - value;
@@ -179,10 +161,6 @@ const PaneProviderComponent = ({
         const oldValue = columnsTrack[id];
         const stealFromIndex = columns[id] + indexTraversal;
 
-        if (stealFromIndex < 0 || stealFromIndex > columnArray.length - 1) {
-          return state;
-        }
-
         const stealFromKey = columnArray[stealFromIndex];
 
         const difference = oldValue - value;
@@ -204,7 +182,7 @@ const PaneProviderComponent = ({
     (dimension: DIMENSIONS, key: string, units?: UNITS) => {
       switch (units) {
         case 'px':
-          return layoutStateInPixels[dimension][key] || 0;
+          return layoutStateInPixels[dimension][key];
         case 'fr':
         default:
           return dimension === 'rows' ? rowsTrack[key] : columnsTrack[key];

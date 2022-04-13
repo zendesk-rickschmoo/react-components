@@ -13,10 +13,8 @@ import { Splitter } from './Splitter';
 
 const UncontrolledTestSplitter = ({
   splitterRef,
-  separatorRef
 }: {
   splitterRef?: RefObject<HTMLDivElement>;
-  separatorRef?: RefObject<HTMLDivElement>;
 }) => {
   return (
     <PaneProvider
@@ -27,7 +25,7 @@ const UncontrolledTestSplitter = ({
     >
       {() => (
         <Pane>
-          <Splitter ref={splitterRef} separatorRef={separatorRef} layoutKey="a" min={0} max={1} />
+          <Splitter ref={splitterRef} layoutKey="a" min={0} max={1} />
         </Pane>
       )}
     </PaneProvider>
