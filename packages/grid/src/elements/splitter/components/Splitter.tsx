@@ -14,9 +14,9 @@ import {
   SplitterType,
   SplitterPosition
 } from '@zendeskgarden/container-splitter';
-import { SplitterContext } from '../../../utils/useSplitterContext';
-import { PaneContext } from '../../../utils/usePaneContext';
-import { ARRAY_ORIENTATION, DIMENSIONS, ISplitterProps } from '../../../utils/types';
+import useSplitterContext from '../../../utils/useSplitterContext';
+import usePaneContext from '../../../utils/usePaneContext';
+import { ARRAY_ORIENTATION, DIMENSIONS, ISplitterProps } from '../../../types';
 
 import { StyledPaneItem, StyledSeparatorContainer, StyledSeparator } from '../../../styled';
 
@@ -46,8 +46,8 @@ const SplitterComponent = forwardRef<HTMLDivElement, ISplitterProps>(
     { layoutKey, min, max, orientation, isFixed, isLeading, isTrailing, environment, ...props },
     ref
   ) => {
-    const splitterContext = useContext(SplitterContext);
-    const paneContext = useContext(PaneContext);
+    const splitterContext = useSplitterContext();
+    const paneContext = usePaneContext();
     const themeContext = useContext(ThemeContext);
     let position;
 

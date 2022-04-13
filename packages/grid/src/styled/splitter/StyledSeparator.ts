@@ -10,7 +10,7 @@ import styled, { css, ThemeProps, DefaultTheme } from 'styled-components';
 
 const COMPONENT_ID = 'splitter.separator';
 
-export interface IStyledSeparatorProps {
+interface IStyledSeparatorProps {
   isHorizontal: boolean;
 }
 
@@ -19,9 +19,9 @@ const sizeStyles = ({ isHorizontal, theme }: IStyledSeparatorProps & ThemeProps<
   const separatorHeight = isHorizontal ? theme.borderWidths.sm : '100%';
 
   return css`
+    margin: 0 auto;
     width: ${separatorWidth};
     height: ${separatorHeight};
-    margin: 0 auto;
   `;
 };
 

@@ -23,6 +23,10 @@ export {
 } from './types';
 
 export type {
+  IPaneProvider,
+  IPaneProviderReturnProps,
+  ISplitterProps,
+  ISplitterContext,
   IColProps,
   IGridProps,
   IRowProps,
@@ -37,10 +41,3 @@ export type {
   Space as SPACE,
   Wrap as WRAP
 } from './types';
-
-export type {
-  IPaneProvider,
-  IPaneProviderReturnProps,
-  ISplitterProps,
-  ISplitterContext
-} from './utils/types';

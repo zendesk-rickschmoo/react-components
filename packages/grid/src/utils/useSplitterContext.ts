@@ -6,7 +6,7 @@
  */
 
 import { createContext, useContext } from 'react';
-import { ISplitterContext } from './types';
+import { ISplitterContext } from '../types';
 
 export const SplitterContext = createContext<ISplitterContext>({
   setRowValue: () => undefined,

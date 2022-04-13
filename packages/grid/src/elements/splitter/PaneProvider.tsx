@@ -8,7 +8,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SplitterContext } from '../../utils/useSplitterContext';
-import { DIMENSIONS, UNITS, IPaneProvider } from '../../utils/types';
+import { DIMENSIONS, UNITS, IPaneProvider } from '../../types';
 
 const getPixelsPerFr = (totalFrs: number, totalDimension: number) => {
   return totalDimension / totalFrs;
@@ -43,9 +43,7 @@ const PaneProviderComponent = ({
   const columnsTrack = isControlled ? columnValues : columnState;
 
   const setRowsTrack = useCallback(
-    (
-      values: (state: Record<string, number>) => Record<string, number>
-    ) => {
+    (values: (state: Record<string, number>) => Record<string, number>) => {
       if (onChange) {
         return onChange(values(rowsTrack), columnsTrack);
       }
@@ -56,9 +54,7 @@ const PaneProviderComponent = ({
   );
 
   const setColumnsTrack = useCallback(
-    (
-      values: ((state: Record<string, number>) => Record<string, number>)
-    ) => {
+    (values: (state: Record<string, number>) => Record<string, number>) => {
       if (onChange) {
         return onChange(rowsTrack, values(columnsTrack));
       }

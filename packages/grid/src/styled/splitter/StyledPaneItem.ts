@@ -7,7 +7,7 @@
 
 import styled from 'styled-components';
 import { DEFAULT_THEME, retrieveComponentStyles } from '@zendeskgarden/react-theming';
-import { ORIENTATION } from '../../utils/types';
+import { ORIENTATION } from '../../types';
 
 const COMPONENT_ID = 'splitter.pane_item';
 
