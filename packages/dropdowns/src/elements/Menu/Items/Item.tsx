@@ -5,7 +5,7 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import SelectedSvg from '@zendeskgarden/svg-icons/src/16/check-lg-stroke.svg';
 import mergeRefs from 'react-merge-refs';
@@ -41,8 +41,15 @@ export const Item = React.forwardRef<HTMLLIElement, IItemProps>(
       throw new Error('All Item components require a `value` prop');
     }
 
+    const [currentItemIndex, setIndex] = useState(itemIndexRef.current);
+    
+    useEffect(() => {
+      setIndex(itemIndexRef.current);
+      itemIndexRef.current++;
+    }, [children, itemIndexRef])
+    
     const currentIndex = itemIndexRef.current;
-    const isFocused = highlightedIndex === currentIndex;
+    const isFocused = highlightedIndex === currentItemIndex;
     let isSelected: boolean;
 
     useEffect(() => {
@@ -71,9 +78,9 @@ export const Item = React.forwardRef<HTMLLIElement, IItemProps>(
     useEffect(() => {
       // Highlight selected item when Select/Autocomplete is open
       if (isOpen && !disabled && !selectedItems && isSelected) {
-        setHighlightedIndex(currentIndex);
+        setHighlightedIndex(currentItemIndex);
       }
-    }, [currentIndex, disabled, isOpen, isSelected, selectedItems, setHighlightedIndex]);
+    }, [currentItemIndex, disabled, isOpen, isSelected, selectedItems, setHighlightedIndex]);
 
     const contextValue = useMemo(() => ({ isDisabled: disabled }), [disabled]);
     const ref = mergeRefs([itemRef, forwardRef]);
@@ -100,7 +107,6 @@ export const Item = React.forwardRef<HTMLLIElement, IItemProps>(
     }
 
     // Only increment current item index if the `Item` is not disabled
-    itemIndexRef.current++;
 
     return (
       <ItemContext.Provider value={contextValue}>
@@ -111,6 +117,7 @@ export const Item = React.forwardRef<HTMLLIElement, IItemProps>(
             item: value,
             isFocused,
             ref,
+            index: currentItemIndex,
             isCompact,
             isDanger,
             ...(hasMenuRef.current && {

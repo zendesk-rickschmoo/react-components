@@ -76,13 +76,18 @@ export const Menu = forwardRef<HTMLUListElement, IMenuProps>((props, menuRef) =>
 
   // Reset Downshift refs on every render
   itemIndexRef.current = 0;
-  nextItemsHashRef.current = {};
   previousIndexRef.current = undefined;
   itemSearchRegistry.current = [];
 
   const popperPlacement = themeContext.rtl
     ? getRtlPopperPlacement(placement!)
     : getPopperPlacement(placement!);
+
+  useEffect(() => {
+    return () => {
+      nextItemsHashRef.current = {};
+    };
+  }, [nextItemsHashRef]);
 
   return (
     /* eslint-disable react/jsx-no-constructed-context-values */

@@ -5,7 +5,7 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { Item } from './Item';
@@ -41,10 +41,12 @@ export const NextItem = React.forwardRef<HTMLLIElement, Omit<IItemProps, 'compon
     } = useDropdownContext();
     const { itemIndexRef } = useMenuContext();
 
-    if (!disabled) {
-      // Include current index in global Dropdown context
-      (nextItemsHashRef.current as any)[itemToString(value)] = itemIndexRef.current;
-    }
+    useEffect(() => {
+      if (!disabled) {
+        // Include current index in global Dropdown context
+        (nextItemsHashRef.current as any)[itemToString(value)] = itemIndexRef.current - 1;
+      }
+    }, [disabled, nextItemsHashRef, itemToString, value, itemIndexRef]);
 
     return (
       <Item
