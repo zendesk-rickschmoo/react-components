@@ -214,7 +214,8 @@ const Row = ({ columnIndex, columnContext, panes }: IRowProps) => {
       defaultColumnValues={{}}
       defaultRowValues={{
         'row-1': 1,
-        'row-2': 1
+        'row-2': 1,
+        'row-3': 1
       }}
     >
       {({ getGridTemplateColumns, getGridTemplateRows }: IPaneProviderReturnProps) => {

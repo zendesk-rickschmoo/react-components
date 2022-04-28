@@ -25,7 +25,6 @@ export const CARD_SPLITTER_COLUMNS: ICardSplitterColumn[] = [
             hasParentContext: true,
             layoutKey: 'column-1',
             orientation: 'end',
-            isTrailing: true,
             min: 0,
             max: 2
           }
@@ -47,6 +46,32 @@ export const CARD_SPLITTER_COLUMNS: ICardSplitterColumn[] = [
             orientation: 'top',
             min: 0,
             max: 2
+          },
+          {
+            hasParentContext: false,
+            layoutKey: 'row-2',
+            orientation: 'bottom',
+            min: 0,
+            max: 2
+          }
+        ]
+      },
+      {
+        name: 'Pane 2a',
+        splitters: [
+          {
+            hasParentContext: true,
+            layoutKey: 'column-1',
+            orientation: 'end',
+            min: 0,
+            max: 2
+          },
+          {
+            hasParentContext: false,
+            layoutKey: 'row-3',
+            orientation: 'top',
+            min: 0,
+            max: 2
           }
         ]
       }
@@ -62,7 +87,6 @@ export const CARD_SPLITTER_COLUMNS: ICardSplitterColumn[] = [
             hasParentContext: true,
             layoutKey: 'column-2',
             orientation: 'start',
-            isLeading: true,
             min: 0,
             max: 2
           },
@@ -96,7 +120,39 @@ export const CARD_SPLITTER_COLUMNS: ICardSplitterColumn[] = [
             hasParentContext: true,
             layoutKey: 'column-2',
             orientation: 'start',
-            isLeading: true,
+            min: 0,
+            max: 2
+          },
+          {
+            hasParentContext: true,
+            layoutKey: 'column-2',
+            orientation: 'end',
+            min: 0,
+            max: 2
+          },
+          {
+            hasParentContext: false,
+            layoutKey: 'row-2',
+            orientation: 'bottom',
+            min: 0,
+            max: 2
+          },
+        ]
+      },
+      {
+        name: 'Pane 4a',
+        splitters: [
+          {
+            hasParentContext: false,
+            layoutKey: 'row-3',
+            orientation: 'top',
+            min: 0,
+            max: 2
+          },
+          {
+            hasParentContext: true,
+            layoutKey: 'column-2',
+            orientation: 'start',
             min: 0,
             max: 2
           },
@@ -128,7 +184,6 @@ export const CARD_SPLITTER_COLUMNS: ICardSplitterColumn[] = [
             hasParentContext: true,
             layoutKey: 'column-3',
             orientation: 'start',
-            isLeading: true,
             min: 0,
             max: 2
           }
@@ -141,7 +196,6 @@ export const CARD_SPLITTER_COLUMNS: ICardSplitterColumn[] = [
             hasParentContext: false,
             layoutKey: 'row-2',
             orientation: 'top',
-            isLeading: true,
             min: 0,
             max: 2
           },
@@ -149,7 +203,32 @@ export const CARD_SPLITTER_COLUMNS: ICardSplitterColumn[] = [
             hasParentContext: true,
             layoutKey: 'column-3',
             orientation: 'start',
-            isLeading: true,
+            min: 0,
+            max: 2
+          },
+          {
+            hasParentContext: false,
+            layoutKey: 'row-2',
+            orientation: 'bottom',
+            min: 0,
+            max: 2
+          },
+        ]
+      },
+      {
+        name: 'Pane 6a',
+        splitters: [
+          {
+            hasParentContext: false,
+            layoutKey: 'row-3',
+            orientation: 'top',
+            min: 0,
+            max: 2
+          },
+          {
+            hasParentContext: true,
+            layoutKey: 'column-3',
+            orientation: 'start',
             min: 0,
             max: 2
           }
