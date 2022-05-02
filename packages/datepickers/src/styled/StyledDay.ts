@@ -49,7 +49,10 @@ const retrieveStyledDayColors = ({
         color: ${getColor('primaryHue', 800, theme)};
       }
 
+      &[data-garden-focus-visible],
+      :focus,
       :active {
+        outline: none;
         background-color: ${getColor('primaryHue', 600, theme, 0.2)};
         color: ${getColor('primaryHue', 800, theme)};
       }
@@ -59,14 +62,18 @@ const retrieveStyledDayColors = ({
 
 const COMPONENT_ID = 'datepickers.day';
 
-export const StyledDay = styled.div.attrs<IStyledDayProps>(props => ({
+export const StyledDay = styled.button.attrs<IStyledDayProps>(props => ({
   'data-garden-id': COMPONENT_ID,
-  'aria-disabled': props.isDisabled ? 'true' : 'false'
+  'aria-disabled': props.isDisabled ? 'true' : 'false',
+  // disabled: props.isDisabled,
+  type: 'button'
+  // tabIndex: -1,
 }))<IStyledDayProps>`
   display: flex;
   position: absolute;
   align-items: center;
   justify-content: center;
+  border: none;
   border-radius: 50%;
   cursor: ${props => (props.isDisabled ? 'inherit' : 'pointer')};
   width: 100%;

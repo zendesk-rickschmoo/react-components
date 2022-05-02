@@ -5,7 +5,7 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyledHeader, StyledHeaderPaddle, StyledHeaderLabel } from '../../../styled';
 import useDatepickerContext from '../utils/useDatepickerContext';
 
@@ -21,43 +21,52 @@ export const MonthSelector: React.FunctionComponent<IMonthSelectorProps> = ({
   locale,
   isCompact
 }) => {
-  const { state, dispatch } = useDatepickerContext();
+  const { state, dispatch, labels } = useDatepickerContext();
 
-  const headerLabelFormatter = useCallback(
-    date => {
-      const formatter = new Intl.DateTimeFormat(locale, {
-        month: 'long',
-        year: 'numeric'
+  const monthTitle = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat(locale, {
+      month: 'long',
+      year: 'numeric'
+    });
+
+    return formatter.format(state.previewDate);
+  }, [locale, state.previewDate]);
+
+  const { previewPreviousMonth, previewNextMonth } = {
+    previewPreviousMonth: useCallback(() => {
+      dispatch({
+        type: 'PREVIEW_PREVIOUS_MONTH'
       });
-
-      return formatter.format(date);
-    },
-    [locale]
-  );
+    }, [dispatch]),
+    previewNextMonth: useCallback(() => {
+      dispatch({
+        type: 'PREVIEW_NEXT_MONTH'
+      });
+    }, [dispatch])
+  };
 
   return (
     <StyledHeader isCompact={isCompact}>
       <StyledHeaderPaddle
         isCompact={isCompact}
-        onClick={() => {
-          dispatch({
-            type: 'PREVIEW_PREVIOUS_MONTH'
-          });
-        }}
+        aria-label={labels?.previousButton}
+        onClick={previewPreviousMonth}
         data-test-id="previous-month"
       >
         <ChevronLeftStrokeIcon />
       </StyledHeaderPaddle>
-      <StyledHeaderLabel isCompact={isCompact} data-test-id="month-display">
-        {headerLabelFormatter(state.previewDate)}
+      <StyledHeaderLabel
+        isCompact={isCompact}
+        data-test-id="month-display"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {monthTitle}
       </StyledHeaderLabel>
       <StyledHeaderPaddle
         isCompact={isCompact}
-        onClick={() => {
-          dispatch({
-            type: 'PREVIEW_NEXT_MONTH'
-          });
-        }}
+        aria-label={labels?.nextButton}
+        onClick={previewNextMonth}
         data-test-id="next-month"
       >
         <ChevronRightStrokeIcon />

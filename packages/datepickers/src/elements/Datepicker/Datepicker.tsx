@@ -46,6 +46,7 @@ export const Datepicker = forwardRef<HTMLDivElement, IDatepickerProps>((props, c
     maxValue,
     locale,
     customParseDate,
+    ariaLabels,
     ...menuProps
   } = props;
   const theme = useContext(ThemeContext);
@@ -102,7 +103,27 @@ export const Datepicker = forwardRef<HTMLDivElement, IDatepickerProps>((props, c
     ? getRtlPopperPlacement(placement!)
     : getPopperPlacement(placement!);
 
-  const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);
+  const contextValue = useMemo(
+    () => ({ state, dispatch, labels: ariaLabels }),
+    [state, dispatch, ariaLabels]
+  );
+  const menuInnerRef = useRef<HTMLDivElement>(null);
+
+  const linkedFocus = useCallback(
+    (event: React.FocusEvent<HTMLInputElement>) => {
+      (function blur(e) {
+        if (menuInnerRef.current?.contains(e.relatedTarget)) {
+          dispatch({ type: 'OPEN' });
+          (e.relatedTarget as HTMLButtonElement)?.addEventListener('blur', blur);
+          if (e.target !== event.target) e.target.removeEventListener('blur', blur);
+        } else {
+          if (e.target !== event.target) e.target.removeEventListener('blur', blur);
+          dispatch({ type: 'CLOSE' });
+        }
+      })(event);
+    },
+    [menuInnerRef, dispatch]
+  );
 
   return (
     <DatepickerContext.Provider value={contextValue}>
@@ -130,8 +151,12 @@ export const Datepicker = forwardRef<HTMLDivElement, IDatepickerProps>((props, c
                   dispatch({ type: 'OPEN' });
                 }
               }),
-              onBlur: composeEventHandlers(childElement.props.onBlur, () => {
-                dispatch({ type: 'CLOSE' });
+              onBlur: composeEventHandlers(childElement.props.onBlur, linkedFocus),
+              onFocus: composeEventHandlers(childElement.props.onFocus, () => {
+                /** Ensure click/focus events from associated labels are not triggered */
+                if (isInputMouseDownRef.current && !state.isOpen) {
+                  dispatch({ type: 'OPEN' });
+                }
               }),
               onChange: composeEventHandlers(
                 childElement.props.onChange,
@@ -161,6 +186,7 @@ export const Datepicker = forwardRef<HTMLDivElement, IDatepickerProps>((props, c
           }}
         </Reference>
         <Popper
+          innerRef={menuInnerRef}
           placement={popperPlacement}
           modifiers={popperModifiers}
           // Disable position updating on scroll events while menu is closed
@@ -218,7 +244,11 @@ Datepicker.propTypes = {
   popperModifiers: PropTypes.any,
   isAnimated: PropTypes.bool,
   eventsEnabled: PropTypes.bool,
-  zIndex: PropTypes.number
+  zIndex: PropTypes.number,
+  ariaLabels: PropTypes.shape({
+    previousButton: PropTypes.string,
+    nextButton: PropTypes.string
+  })
 };
 
 Datepicker.defaultProps = {
@@ -227,5 +257,9 @@ Datepicker.defaultProps = {
   isAnimated: true,
   eventsEnabled: true,
   zIndex: 1000,
-  locale: 'en-US'
+  locale: 'en-US',
+  ariaLabels: {
+    previousButton: 'previous month',
+    nextButton: 'next month'
+  }
 };

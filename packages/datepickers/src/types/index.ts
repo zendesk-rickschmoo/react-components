@@ -108,6 +108,13 @@ export interface IDatepickerProps extends Omit<HTMLAttributes<HTMLDivElement>, '
    * Sets the `z-index` of the calendar
    */
   zIndex?: number;
+  /**
+   * Sets the `aria-label` of the calendar paddle buttons
+   */
+  ariaLabels?: {
+    previousButton?: string;
+    nextButton?: string;
+  };
 }
 
 export interface IDatepickerRangeProps

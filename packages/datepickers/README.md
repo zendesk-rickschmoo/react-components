@@ -37,3 +37,7 @@ import { Datepicker } from '@zendeskgarden/react-datepickers';
   </Field>
 </ThemeProvider>;
 ```
+
+### Server side rendering
+
+The `<Datepicker>` makes use of `Intl`, please make sure to supply a polyfill (eg [`intl.js`](https://www.npmjs.com/package/intl)).

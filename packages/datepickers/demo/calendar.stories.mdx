@@ -1,0 +1,44 @@
+import { Meta, ArgsTable, Canvas, Story } from '@storybook/addon-docs';
+import { useArgs } from '@storybook/client-api';
+import { Calendar } from '../src/elements/Datepicker/components/Calendar';
+import { CalendarStory } from './stories/CalendarStory';
+import { DATE_STYLE_OPTIONS } from './stories/data';
+
+<Meta title="Packages/Datepickers/Calendar" component={Calendar} />
+
+# API
+
+<ArgsTable />
+
+# Demo
+
+<Canvas>
+  <Story
+    name="Calendar"
+    args={{ dateStyle: DATE_STYLE_OPTIONS[1], isCompact: false }}
+    argTypes={{
+      value: { control: 'date' },
+      minValue: { control: 'date' },
+      maxValue: { control: 'date' },
+      dateStyle: {
+        control: 'radio',
+        options: DATE_STYLE_OPTIONS,
+        table: { category: 'Story' }
+      }
+    }}
+    parameters={{
+      layout: 'centered',
+      design: {
+        allowFullscreen: true,
+        type: 'figma',
+        url: 'https://www.figma.com/file/6g87L4FdKZTA3knt3Rsfdx/Garden?node-id=134%3A32'
+      }
+    }}
+  >
+    {args => {
+      const updateArgs = useArgs()[1];
+      const handleChange = value => updateArgs({ value });
+      return <CalendarStory {...args} onChange={handleChange} />;
+    }}
+  </Story>
+</Canvas>

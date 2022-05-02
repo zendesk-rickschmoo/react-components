@@ -5,7 +5,8 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { forwardRef, HTMLAttributes, useCallback } from 'react';
+import React, { forwardRef, HTMLAttributes, useCallback, useRef } from 'react';
+import { KEY_CODES } from '@zendeskgarden/container-utilities';
 import startOfMonth from 'date-fns/startOfMonth';
 import endOfMonth from 'date-fns/endOfMonth';
 import startOfWeek from 'date-fns/startOfWeek';
@@ -18,6 +19,7 @@ import isSameMonth from 'date-fns/isSameMonth';
 import isBefore from 'date-fns/isBefore';
 import isAfter from 'date-fns/isAfter';
 import getDate from 'date-fns/getDate';
+
 import {
   StyledDatepicker,
   StyledCalendar,
@@ -29,7 +31,7 @@ import useDatepickerContext from '../utils/useDatepickerContext';
 import { getStartOfWeek } from '../../../utils/calendar-utils';
 import { MonthSelector } from './MonthSelector';
 
-interface ICalendarProps extends HTMLAttributes<HTMLDivElement> {
+export interface ICalendarProps extends HTMLAttributes<HTMLDivElement> {
   value?: Date;
   minValue?: Date;
   maxValue?: Date;
@@ -52,9 +54,9 @@ export const Calendar = forwardRef<HTMLDivElement, ICalendarProps>(
     });
 
     const dayLabelFormatter = useCallback(
-      date => {
+      (date, full = false) => {
         const formatter = new Intl.DateTimeFormat(locale, {
-          weekday: 'short'
+          weekday: full ? 'long' : 'short'
         });
 
         return formatter.format(date);
@@ -74,11 +76,27 @@ export const Calendar = forwardRef<HTMLDivElement, ICalendarProps>(
       }
     );
 
-    const items = eachDayOfInterval({ start: startDate, end: endDate }).map((date, itemsIndex) => {
-      const formattedDayLabel = getDate(date);
+    const transitDateRef = useRef<Date | null>();
+    const datesInterval = eachDayOfInterval({ start: startDate, end: endDate });
+    const { selected: containsSelected, today: containsToday } = datesInterval
+      .map(date => ({ selected: value && isSameDay(date, value), today: isToday(date) }))
+      .filter(({ selected: s, today: t }) => s || t)
+      .reduce((map, next) => ({ ...map, ...next }), {}) as { selected: boolean; today: boolean };
+    const items = datesInterval.map((date, itemsIndex) => {
+      const formattedDateLabel = getDate(date);
       const isCurrentDate = isToday(date);
       const isPreviousMonth = !isSameMonth(date, state.previewDate);
       const isSelected = value && isSameDay(date, value);
+
+      let tabIndex = -1;
+
+      if (
+        isSelected ||
+        (!containsSelected && isCurrentDate) ||
+        (!containsSelected && !containsToday && isSameDay(date, monthStartDate))
+      ) {
+        tabIndex = 0;
+      }
 
       let isDisabled = false;
 
@@ -98,18 +116,79 @@ export const Calendar = forwardRef<HTMLDivElement, ICalendarProps>(
             isSelected={isSelected}
             isDisabled={isDisabled}
             isCompact={isCompact!}
-            onClick={() => {
-              if (!isDisabled) {
-                dispatch({ type: 'SELECT_DATE', value: date });
-              }
-            }}
             data-test-id="day"
             data-test-previous={isPreviousMonth}
             data-test-selected={isSelected}
             data-test-disabled={isDisabled}
             data-test-today={isCurrentDate}
+            data-date={date}
+            aria-pressed={isSelected}
+            aria-label={[dayLabelFormatter(date, true), formattedDateLabel].join(' ')}
+            tabIndex={tabIndex}
+            onClick={() => {
+              if (!isDisabled) {
+                dispatch({ type: 'SELECT_DATE', value: date });
+              }
+            }}
+            onKeyDown={(e: React.KeyboardEvent<HTMLButtonElement>) => {
+              let nextDate = null;
+
+              switch (e.keyCode) {
+                case KEY_CODES.SPACE:
+                case KEY_CODES.ENTER:
+                  dispatch({ type: 'SELECT_DATE', value: date });
+                  break;
+                case KEY_CODES.ESCAPE:
+                  (e.target as HTMLButtonElement).blur();
+                  break;
+                case KEY_CODES.UP:
+                  nextDate = addDays(date, -7);
+                  break;
+                case KEY_CODES.DOWN:
+                  nextDate = addDays(date, 7);
+                  break;
+                case KEY_CODES.LEFT:
+                  nextDate = addDays(date, -1);
+                  break;
+                case KEY_CODES.RIGHT:
+                  nextDate = addDays(date, 1);
+                  break;
+              }
+
+              if (nextDate) {
+                const dateNode = document.querySelector(
+                  `[data-date="${nextDate}"]`
+                ) as HTMLButtonElement;
+
+                dateNode?.focus();
+
+                if (!dateNode) {
+                  if (isBefore(date, nextDate)) {
+                    dispatch({
+                      type: 'PREVIEW_NEXT_MONTH'
+                    });
+                  } else if (isAfter(date, nextDate)) {
+                    dispatch({
+                      type: 'PREVIEW_PREVIOUS_MONTH'
+                    });
+                  }
+
+                  transitDateRef.current = nextDate;
+                }
+              }
+            }}
+            ref={
+              // when the preview date changes to another month using the keyboard,
+              // we need a way to select the next element node and focus on it
+              transitDateRef.current && isSameDay(transitDateRef.current, date)
+                ? (node: HTMLButtonElement) => {
+                    node?.focus();
+                    transitDateRef.current = null;
+                  }
+                : null
+            }
           >
-            {formattedDayLabel}
+            {formattedDateLabel}
           </StyledDay>
         </StyledCalendarItem>
       );
