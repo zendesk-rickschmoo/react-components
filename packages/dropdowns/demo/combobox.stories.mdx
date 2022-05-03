@@ -36,15 +36,15 @@ import { COMBOBOX_ITEMS as ITEMS, DROPDOWN_PLACEMENT as PLACEMENT } from './stor
       hint: 'Hint',
       hasMessage: true,
       message: 'Message',
-      hasStartIcon: false,
-      hasEndIcon: false,
+      start: false,
+      end: false,
       items: ITEMS,
       inputValue: '',
       isOpen: false
     }}
     argTypes={{
-      hasStartIcon: { name: 'start' },
-      hasEndIcon: { name: 'end' },
+      start: { control: 'boolean' },
+      end: { control: 'boolean' },
       label: { name: 'children', table: { category: 'Label' } },
       isLabelRegular: { name: 'isRegular', table: { category: 'Label' } },
       isLabelHidden: { name: 'hidden', table: { category: 'Label' } },
@@ -71,9 +71,12 @@ import { COMBOBOX_ITEMS as ITEMS, DROPDOWN_PLACEMENT as PLACEMENT } from './stor
   >
     {args => {
       const updateArgs = useArgs()[1];
+      const handleSelect = selectedItem =>
+        args.isAutocomplete && updateArgs({ selectedItem, inputValue: selectedItem.text });
       const handleInputValueChange = inputValue => updateArgs({ inputValue });
       const handleStateChange = ({ highlightedIndex, ...changes }) => {
-        Number.isInteger(highlightedIndex) &&
+        !args.isAutocomplete &&
+          Number.isInteger(highlightedIndex) &&
           updateArgs({ inputValue: args.items[highlightedIndex].text });
         changes.hasOwnProperty('isOpen') &&
           ![Downshift.stateChangeTypes.blurButton, Downshift.stateChangeTypes.blurInput].includes(
@@ -84,6 +87,7 @@ import { COMBOBOX_ITEMS as ITEMS, DROPDOWN_PLACEMENT as PLACEMENT } from './stor
       return (
         <ComboboxStory
           {...args}
+          onSelect={handleSelect}
           onInputValueChange={handleInputValueChange}
           onStateChange={handleStateChange}
         />

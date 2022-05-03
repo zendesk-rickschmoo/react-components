@@ -103,6 +103,8 @@ export interface IAutocompleteProps extends ISelectProps {
 }
 
 export interface IComboboxProps extends IAutocompleteProps {
+  /** Determines if the combobox functions as an autocomplete */
+  isAutocomplete?: boolean;
   /** Defines text that appears in the element when no items are selected */
   placeholder?: string;
   /** Defines the icon rendered in the end position */

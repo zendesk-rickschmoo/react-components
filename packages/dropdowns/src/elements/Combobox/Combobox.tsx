@@ -9,6 +9,7 @@ import React, { forwardRef, KeyboardEvent, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Reference } from 'react-popper';
 import { KEY_CODES } from '@zendeskgarden/container-utilities';
+import Chevron from '@zendeskgarden/svg-icons/src/16/chevron-down-stroke.svg';
 import { MediaInput, VALIDATION } from '@zendeskgarden/react-forms';
 import mergeRefs from 'react-merge-refs';
 import { IComboboxProps } from '../../types';
@@ -20,6 +21,7 @@ import useDropdownContext from '../../utils/useDropdownContext';
 export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
   (
     {
+      isAutocomplete,
       isCompact,
       isBare,
       disabled,
@@ -46,7 +48,7 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
         role: null, // apply role to input for Safari screenreader support
         type: null, // prevent button type from being added to wrapper div
         onClick: (event: MouseEvent) => {
-          (event as any).nativeEvent.preventDownshiftDefault = true;
+          (event as any).nativeEvent.preventDownshiftDefault = !isAutocomplete;
         },
         ...props
       } as any)
@@ -59,7 +61,6 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
       placeholder,
       validation,
       start,
-      end,
       role: 'combobox',
       onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
         if (
@@ -83,8 +84,8 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
     }, [inputRef, isOpen]);
 
     useEffect(() => {
-      setDropdownType('combobox');
-    }, [setDropdownType]);
+      setDropdownType(isAutocomplete ? 'autocomplete' : 'combobox');
+    }, [setDropdownType, isAutocomplete]);
 
     return (
       <Reference>
@@ -103,6 +104,7 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
           return (
             <MediaInput
               {...inputProps}
+              end={isAutocomplete ? <Chevron /> : end}
               wrapperProps={wrapperProps}
               wrapperRef={wrapperRefProp}
               ref={mergeRefs([inputRef, inputRefProp])}
@@ -117,10 +119,14 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
 Combobox.displayName = 'Combobox';
 
 Combobox.propTypes = {
+  isAutocomplete: PropTypes.bool,
   isCompact: PropTypes.bool,
   isBare: PropTypes.bool,
   disabled: PropTypes.bool,
   focusInset: PropTypes.bool,
   placeholder: PropTypes.string,
-  validation: PropTypes.oneOf(VALIDATION)
+  validation: PropTypes.oneOf(VALIDATION),
+  start: PropTypes.any,
+  end: PropTypes.any,
+  inputRef: PropTypes.object
 };
