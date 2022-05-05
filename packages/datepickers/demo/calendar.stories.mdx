@@ -36,7 +36,7 @@ import { DATE_STYLE_OPTIONS } from './stories/data';
     }}
   >
     {args => {
-      const updateArgs = useArgs()[1];
+      const [, updateArgs] = useArgs();
       const handleChange = value => updateArgs({ value });
       return <CalendarStory {...args} onChange={handleChange} />;
     }}
