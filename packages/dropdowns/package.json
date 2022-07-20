@@ -21,10 +21,11 @@
   "sideEffects": false,
   "types": "dist/typings/index.d.ts",
   "dependencies": {
+    "@floating-ui/react-dom": "^1.0.0",
     "@zendeskgarden/container-selection": "^2.0.0",
     "@zendeskgarden/container-utilities": "^1.0.0",
     "@zendeskgarden/react-forms": "^8.53.3",
-    "downshift": "^6.0.0",
+    "downshift": "^6.1.0",
     "polished": "^4.0.0",
     "prop-types": "^15.5.7",
     "react-merge-refs": "^1.1.0",

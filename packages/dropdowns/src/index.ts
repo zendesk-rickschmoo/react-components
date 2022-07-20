@@ -5,10 +5,12 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+export { Combobox } from './next/Combobox/Combobox';
+
 export { Dropdown } from './elements/Dropdown/Dropdown';
 export { Trigger } from './elements/Trigger/Trigger';
 export { Autocomplete } from './elements/Autocomplete/Autocomplete';
-export { Combobox } from './elements/Combobox/Combobox';
+// export { Combobox } from './elements/Combobox/Combobox';
 export { Multiselect } from './elements/Multiselect/Multiselect';
 export { Select } from './elements/Select/Select';
 export { Field } from './elements/Fields/Field';
