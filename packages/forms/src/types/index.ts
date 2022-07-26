@@ -90,6 +90,8 @@ export interface IMediaInputProps extends IInputProps {
   wrapperProps?: any;
   /** Applies a ref to the wrapping [FauxInput](#fauxinput) element */
   wrapperRef?: any;
+  /** @ignore Styles the input like a select/autocomplete */
+  select?: 'open' | 'close';
 }
 
 export interface IFauxInputProps
@@ -103,6 +105,8 @@ export interface IFauxInputProps
   isFocused?: boolean;
   /** Applies hover stying */
   isHovered?: boolean;
+  /** @ignore Styles the input like a select/autocomplete */
+  isSelect?: boolean;
 }
 
 export interface IFauxInputIconProps

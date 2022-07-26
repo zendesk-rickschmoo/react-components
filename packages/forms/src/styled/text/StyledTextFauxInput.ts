@@ -16,6 +16,7 @@ export interface IStyledTextFauxInputProps extends IStyledTextInputProps {
   mediaLayout?: boolean;
   isDisabled?: boolean;
   isReadOnly?: boolean;
+  isSelect?: boolean;
 }
 
 export const StyledTextFauxInput = styled(
@@ -29,7 +30,19 @@ export const StyledTextFauxInput = styled(
 }))<IStyledTextFauxInputProps>`
   display: ${props => (props.mediaLayout ? 'inline-flex' : 'inline-block')};
   align-items: ${props => props.mediaLayout && 'baseline'};
-  cursor: ${props => (props.mediaLayout && !props.isDisabled ? 'text' : 'default')};
+  cursor: ${props => {
+    if (props.isDisabled) {
+      return 'default';
+    } else if (props.isSelect) {
+      return 'pointer';
+    } else if (props.mediaLayout) {
+      return 'text';
+    }
+
+    return 'default';
+  }};
+  min-width: ${props =>
+    props.isSelect && `${props.theme.space.base * (props.isCompact ? 25 : 36)}px`};
   overflow: hidden;
 
   & > ${StyledTextInput} {

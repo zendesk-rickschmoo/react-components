@@ -7,6 +7,7 @@
 
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
+import Chevron from '@zendeskgarden/svg-icons/src/16/chevron-down-stroke.svg';
 import { composeEventHandlers } from '@zendeskgarden/container-utilities';
 import mergeRefs from 'react-merge-refs';
 import { IMediaInputProps, VALIDATION } from '../types';
@@ -31,6 +32,7 @@ export const MediaInput = React.forwardRef<HTMLInputElement, IMediaInputProps>(
       wrapperProps = {},
       wrapperRef,
       onSelect,
+      select,
       ...props
     },
     ref
@@ -97,6 +99,7 @@ export const MediaInput = React.forwardRef<HTMLInputElement, IMediaInputProps>(
         isHovered={isHovered || isLabelHovered}
         isCompact={isCompact}
         isBare={isBare}
+        isSelect={select || false}
         focusInset={focusInset}
         readOnly={readOnly}
         validation={validation}
@@ -114,13 +117,14 @@ export const MediaInput = React.forwardRef<HTMLInputElement, IMediaInputProps>(
           </FauxInput.StartIcon>
         )}
         <StyledTextMediaInput {...(combinedProps as any)} />
-        {end && (
+        {(select || end) && (
           <FauxInput.EndIcon
             isDisabled={disabled}
             isFocused={isFocused}
             isHovered={isHovered || isLabelHovered}
+            isRotated={select === 'open'}
           >
-            {end}
+            {select ? <Chevron /> : end}
           </FauxInput.EndIcon>
         )}
       </FauxInput>

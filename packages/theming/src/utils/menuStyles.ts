@@ -7,6 +7,7 @@
 
 import { css, DefaultTheme, keyframes } from 'styled-components';
 import getColor from './getColor';
+import getLineHeight from './getLineHeight';
 import DEFAULT_THEME from '../elements/theme';
 import { MenuPosition } from '../types';
 
@@ -122,7 +123,10 @@ export default function menuStyles(position: MenuPosition, options: MenuOptions 
       background-color: ${theme.colors.background};
       cursor: default; /* [4] */
       padding: 0; /* [3] */
+      min-width: 100%;
+      max-height: inherit;
       text-align: ${theme.rtl ? 'right' : 'left'};
+      line-height: ${getLineHeight(theme.space.base * 5, theme.fontSizes.md)};
       white-space: normal; /* [5] */
       font-size: ${theme.fontSizes.md};
       font-weight: ${theme.fontWeights.regular};

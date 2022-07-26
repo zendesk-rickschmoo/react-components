@@ -5,12 +5,38 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { forwardRef, MouseEventHandler, useMemo, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { useCombobox } from 'downshift';
-import { useFloating } from '@floating-ui/react-dom';
+import { autoUpdate, flip, offset, size, useFloating } from '@floating-ui/react-dom';
 import mergeRefs from 'react-merge-refs';
+import { composeEventHandlers } from '@zendeskgarden/container-utilities';
+import {
+  DEFAULT_THEME,
+  menuStyles,
+  MENU_POSITION as MenuPosition
+} from '@zendeskgarden/react-theming';
 import { MediaInput } from '@zendeskgarden/react-forms';
 import { IComboboxProps } from '../../types/next';
+import { StyledItem } from '../../styled';
+
+const StyledMenu = styled.div<{ position: MenuPosition; isHidden: boolean }>`
+  ${props =>
+    menuStyles(props.position, {
+      theme: props.theme,
+      hidden: props.isHidden,
+      childSelector: 'ul',
+      animationModifier: '[data-garden-animate="true"]'
+    })};
+
+  & > ul {
+    overflow-y: scroll;
+  }
+`;
+
+StyledMenu.defaultProps = {
+  theme: DEFAULT_THEME
+};
 
 const ITEMS = [
   'Asparagus',
@@ -34,86 +60,122 @@ const ITEMS = [
  * @extends HTMLAttributes<HTMLDivElement>
  */
 export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
-  ({ isAutocomplete, ...props }, ref) => {
-    const [items, setItems] = useState(ITEMS);
+  ({ isAutocomplete, onBlur, onClick, ...props }, ref) => {
+    const [items] = useState(ITEMS);
+    const [openChangeType, setOpenChangeType] = useState<string>();
 
     const {
-      getLabelProps,
       getComboboxProps,
-      getInputProps,
       getToggleButtonProps,
+      getInputProps,
       getMenuProps,
       getItemProps,
       isOpen,
       highlightedIndex
     } = useCombobox({
-      items
-      // onInputValueChange: ({ inputValue }) => {
-      //   if (inputValue && inputValue.length > 0) {
-      //     const valueRegexp = new RegExp(inputValue, 'gui');
+      items,
+      onIsOpenChange: ({ type }) => setOpenChangeType(type)
+    });
 
-      //     setItems(ITEMS.filter(item => item.match(valueRegexp)) || []);
-      //   } else {
-      //     setItems(ITEMS);
-      //   }
-      // }
+    const handleBlur = () => isAutocomplete && setOpenChangeType(undefined);
+
+    const handleClick = useCallback(
+      event => {
+        if (isAutocomplete) {
+          // Downshift does not expect a dropdown like Garden's autocomplete
+          // where the wrapping div functions like an open/close button. Finesse
+          // state so that default close-on-blur functionality is not undone by
+          // the toggle of the "button".
+          const { onClick: onToggleButtonClick } = getToggleButtonProps();
+
+          if (openChangeType === useCombobox.stateChangeTypes.InputBlur) {
+            // In the case of close-on-blur set state that indicates the
+            // "button" was clicked, but don't actually perform the action since
+            // the menu is already closed.
+            setOpenChangeType(useCombobox.stateChangeTypes.ToggleButtonClick);
+          } else {
+            onToggleButtonClick(event);
+          }
+        }
+      },
+      [isAutocomplete, getToggleButtonProps, openChangeType]
+    );
+
+    const { ref: downshiftComboboxRef, ...comboboxProps } = getComboboxProps();
+    const { ref: downshiftInputRef, ...inputProps } = getInputProps({
+      'aria-autocomplete': isAutocomplete ? 'list' : 'none',
+      onClick: event => isAutocomplete && isOpen && event.stopPropagation(),
+      ...comboboxProps // https://github.com/downshift-js/downshift/issues/1239
     });
 
     const {
       reference: floatingInputRef,
       floating: floatingMenuRef,
+      placement,
       x,
       y
-    } = useFloating({ placement: 'bottom-start' });
-
-    let handleClick: MouseEventHandler | undefined = undefined;
-
-    if (isAutocomplete && !isOpen) {
-      const { onClick: onToggleButtonClick } = getToggleButtonProps();
-
-      handleClick = onToggleButtonClick;
-    }
-
-    const { ref: downshiftComboboxRef, ...comboboxProps } = getComboboxProps({
-      onClick: handleClick
+    } = useFloating({
+      placement: 'bottom-start',
+      whileElementsMounted: autoUpdate,
+      middleware: [
+        offset(4),
+        flip(),
+        size({
+          apply: ({ elements, rects }) => {
+            elements.floating.style.width = `${rects.reference.width}px`;
+          }
+        })
+      ]
     });
-    const { ref: downshiftInputRef, ...inputProps } = getInputProps(comboboxProps); // https://github.com/downshift-js/downshift/issues/1239
-    const { ref: downshiftMenuRef, ...menuProps } = getMenuProps();
 
-    // https://floating-ui.com/docs/react-dom#stable-ref-props
-    const inputRef = useMemo(
-      () => mergeRefs([floatingInputRef, downshiftInputRef]),
-      [floatingInputRef /* eslint-disable-line react-hooks/exhaustive-deps */]
-    );
-    const menuRef = useMemo(
-      () => mergeRefs([floatingMenuRef, downshiftMenuRef]),
-      [floatingMenuRef /* eslint-disable-line react-hooks/exhaustive-deps */]
-    );
-    const menuStyle = {
-      position: 'absolute',
-      top: y ?? 0,
-      left: x ?? 0
-    };
+    const [isHidden, setIsHidden] = useState(true);
 
-    /* eslint-disable jsx-a11y/label-has-associated-control */
+    useEffect(() => {
+      let timeout: NodeJS.Timeout;
+
+      if (isOpen) {
+        setIsHidden(false);
+      } else {
+        timeout = setTimeout(() => setIsHidden(true), 200 /* match menu opacity transition */);
+      }
+
+      return () => clearTimeout(timeout);
+    }, [isOpen]);
+
     return (
-      <div {...props} ref={mergeRefs([downshiftComboboxRef, ref])}>
-        <label {...getLabelProps()}>Combobox</label>
-        <MediaInput {...inputProps} ref={downshiftInputRef} wrapperRef={floatingInputRef} />
-        {/* <input {...inputProps} ref={inputRef} /> */}
-        <ul {...menuProps} ref={menuRef} style={menuStyle}>
-          {isOpen &&
-            items.map((item, index) => (
-              <li
-                key={`${item}${index}`}
-                {...getItemProps({ item, index })}
-                style={highlightedIndex === index ? { backgroundColor: '#bde4ff' } : {}}
-              >
-                {item}
-              </li>
-            ))}
-        </ul>
-      </div>
+      <>
+        <MediaInput
+          {...inputProps}
+          ref={mergeRefs([downshiftInputRef, downshiftComboboxRef])}
+          wrapperRef={mergeRefs([floatingInputRef, ref])}
+          wrapperProps={{
+            onBlur: composeEventHandlers(handleBlur, onBlur),
+            onClick: composeEventHandlers(handleClick, onClick),
+            ...props
+          }}
+          select={isAutocomplete && (isOpen ? 'open' : 'close')}
+        />
+        <StyledMenu
+          position={placement === 'bottom-start' ? 'bottom' : 'top'}
+          isHidden={!isOpen}
+          data-garden-animate={isHidden ? 'false' : 'true'}
+          style={{ top: y ?? 0, left: x ?? 0 }}
+          ref={floatingMenuRef}
+        >
+          <ul {...getMenuProps()}>
+            {!isHidden &&
+              items.map((item, index) => (
+                <StyledItem
+                  key={`${item}${index}`}
+                  isFocused={highlightedIndex === index}
+                  {...getItemProps({ item, index })}
+                >
+                  {item}
+                </StyledItem>
+              ))}
+          </ul>
+        </StyledMenu>
+      </>
     );
   }
 );

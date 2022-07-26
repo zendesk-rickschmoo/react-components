@@ -1,5 +1,6 @@
 import { Meta, ArgsTable, Canvas, Story } from '@storybook/addon-docs';
 import { Combobox } from '@zendeskgarden/react-dropdowns';
+import { ComboboxStory } from './stories/ComboboxStory';
 
 <Meta title="Packages/Dropdowns/Combobox" component={Combobox} />
 
@@ -10,5 +11,5 @@ import { Combobox } from '@zendeskgarden/react-dropdowns';
 # Demo
 
 <Canvas>
-  <Story name="Combobox">{args => <Combobox {...args} />}</Story>
+  <Story name="Combobox">{args => <ComboboxStory {...args} />}</Story>
 </Canvas>

@@ -8,5 +8,6 @@
 import { HTMLAttributes } from 'react';
 
 export interface IComboboxProps extends HTMLAttributes<HTMLDivElement> {
+  /** Determines if this combobox behaves as an autocomplete */
   isAutocomplete?: boolean;
 }

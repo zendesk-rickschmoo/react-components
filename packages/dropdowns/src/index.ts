@@ -35,7 +35,7 @@ export type {
   ITriggerProps,
   ISelectProps,
   IAutocompleteProps,
-  IComboboxProps,
+  // IComboboxProps,
   IMultiselectProps,
   IMenuProps,
   IItemProps,
@@ -44,6 +44,7 @@ export type {
   GardenPlacement as GARDEN_PLACEMENT,
   PopperPlacement as POPPER_PLACEMENT
 } from './types';
+export type { IComboboxProps } from './types/next';
 export type { ILabelProps, IMessageProps } from '@zendeskgarden/react-forms';
 
 export { resetIdCounter } from 'downshift';
