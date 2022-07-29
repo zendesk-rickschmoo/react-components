@@ -44,7 +44,7 @@ export type {
   GardenPlacement as GARDEN_PLACEMENT,
   PopperPlacement as POPPER_PLACEMENT
 } from './types';
-export type { IComboboxProps } from './types/next';
+export type { IComboboxProps } from './next/types';
 export type { ILabelProps, IMessageProps } from '@zendeskgarden/react-forms';
 
 export { resetIdCounter } from 'downshift';

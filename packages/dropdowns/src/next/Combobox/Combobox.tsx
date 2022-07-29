@@ -17,8 +17,8 @@ import {
   MENU_POSITION as MenuPosition
 } from '@zendeskgarden/react-theming';
 import { MediaInput } from '@zendeskgarden/react-forms';
-import { IComboboxProps } from '../../types/next';
-import { StyledItem } from '../../styled';
+import { IComboboxProps } from '../types';
+import { StyledHeaderItem, StyledItem, StyledSeparator } from '../../styled';
 
 const StyledMenu = styled.div<{ position: MenuPosition; isHidden: boolean }>`
   ${props =>
@@ -104,7 +104,7 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
     const { ref: downshiftComboboxRef, ...comboboxProps } = getComboboxProps();
     const { ref: downshiftInputRef, ...inputProps } = getInputProps({
       'aria-autocomplete': isAutocomplete ? 'list' : 'none',
-      onClick: event => isAutocomplete && isOpen && event.stopPropagation(),
+      onClick: event => isAutocomplete && isOpen && event.stopPropagation(), // prevent menu close
       ...comboboxProps // https://github.com/downshift-js/downshift/issues/1239
     });
 
@@ -163,16 +163,23 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
           ref={floatingMenuRef}
         >
           <ul {...getMenuProps()}>
-            {!isHidden &&
-              items.map((item, index) => (
-                <StyledItem
-                  key={`${item}${index}`}
-                  isFocused={highlightedIndex === index}
-                  {...getItemProps({ item, index })}
-                >
-                  {item}
-                </StyledItem>
-              ))}
+            <StyledHeaderItem>HEADER</StyledHeaderItem>
+            <StyledSeparator />
+            <li>
+              <ul role="group" aria-label="header">
+                <li role="presentation">HEADER</li>
+                {!isHidden &&
+                  items.map((item, index) => (
+                    <StyledItem
+                      key={`${item}${index}`}
+                      isFocused={highlightedIndex === index}
+                      {...getItemProps({ item, index })}
+                    >
+                      {item}
+                    </StyledItem>
+                  ))}
+              </ul>
+            </li>
           </ul>
         </StyledMenu>
       </>
