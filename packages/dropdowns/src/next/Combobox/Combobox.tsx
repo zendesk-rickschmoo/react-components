@@ -5,63 +5,49 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { forwardRef, useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import React, {
+  Children,
+  forwardRef,
+  isValidElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import { useCombobox } from 'downshift';
 import { autoUpdate, flip, offset, size, useFloating } from '@floating-ui/react-dom';
 import mergeRefs from 'react-merge-refs';
 import { composeEventHandlers } from '@zendeskgarden/container-utilities';
-import {
-  DEFAULT_THEME,
-  menuStyles,
-  MENU_POSITION as MenuPosition
-} from '@zendeskgarden/react-theming';
 import { MediaInput } from '@zendeskgarden/react-forms';
-import { IComboboxProps } from '../types';
-import { StyledHeaderItem, StyledItem, StyledSeparator } from '../../styled';
+import { IComboboxProps, OptionValue } from '../types';
+import { StyledMenu } from '../views/StyledMenu';
+import { StyledListbox } from '../views/StyledListbox';
+import { ListboxContext } from '../context/useListboxContext';
 
-const StyledMenu = styled.div<{ position: MenuPosition; isHidden: boolean }>`
-  ${props =>
-    menuStyles(props.position, {
-      theme: props.theme,
-      hidden: props.isHidden,
-      childSelector: 'ul',
-      animationModifier: '[data-garden-animate="true"]'
-    })};
+const toValues = (children: ReactNode): OptionValue[] =>
+  Children.toArray(children).reduce((values: OptionValue[], option) => {
+    if (isValidElement(option)) {
+      if (
+        option.props.value !== undefined &&
+        option.props.value !== null &&
+        !option.props.isDisabled
+      ) {
+        return values.concat(option.props.value);
+      }
 
-  & > ul {
-    overflow-y: scroll;
-  }
-`;
+      return values.concat(toValues(option.props.children));
+    }
 
-StyledMenu.defaultProps = {
-  theme: DEFAULT_THEME
-};
-
-const ITEMS = [
-  'Asparagus',
-  'Brussel sprouts',
-  'Cauliflower',
-  'Garlic',
-  'Jerusalem artichoke',
-  'Kale',
-  'Lettuce',
-  'Onion',
-  'Mushroom',
-  'Potato',
-  'Radish',
-  'Spinach',
-  'Tomato',
-  'Yam',
-  'Zucchini'
-];
+    return values;
+  }, []);
 
 /**
  * @extends HTMLAttributes<HTMLDivElement>
  */
 export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
-  ({ isAutocomplete, onBlur, onClick, ...props }, ref) => {
-    const [items] = useState(ITEMS);
+  ({ children, isAutocomplete, onBlur, onClick, ...props }, ref) => {
+    const values = useMemo(() => toValues(children), [children]);
     const [openChangeType, setOpenChangeType] = useState<string>();
 
     const {
@@ -72,8 +58,9 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
       getItemProps,
       isOpen,
       highlightedIndex
-    } = useCombobox({
-      items,
+    } = useCombobox<OptionValue>({
+      isOpen: true,
+      items: values,
       onIsOpenChange: ({ type }) => setOpenChangeType(type)
     });
 
@@ -128,6 +115,11 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
       ]
     });
 
+    const listboxContextProviderValue = useMemo(
+      () => ({ getOptionProps: getItemProps, values, activeValue: values[highlightedIndex] }),
+      [getItemProps, values, highlightedIndex]
+    );
+
     const [isHidden, setIsHidden] = useState(true);
 
     useEffect(() => {
@@ -162,25 +154,9 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
           style={{ top: y ?? 0, left: x ?? 0 }}
           ref={floatingMenuRef}
         >
-          <ul {...getMenuProps()}>
-            <StyledHeaderItem>HEADER</StyledHeaderItem>
-            <StyledSeparator />
-            <li>
-              <ul role="group" aria-label="header">
-                <li role="presentation">HEADER</li>
-                {!isHidden &&
-                  items.map((item, index) => (
-                    <StyledItem
-                      key={`${item}${index}`}
-                      isFocused={highlightedIndex === index}
-                      {...getItemProps({ item, index })}
-                    >
-                      {item}
-                    </StyledItem>
-                  ))}
-              </ul>
-            </li>
-          </ul>
+          <ListboxContext.Provider value={listboxContextProviderValue}>
+            <StyledListbox {...getMenuProps()}>{!isHidden && children}</StyledListbox>
+          </ListboxContext.Provider>
         </StyledMenu>
       </>
     );

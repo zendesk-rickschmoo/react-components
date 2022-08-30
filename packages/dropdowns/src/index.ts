@@ -6,6 +6,8 @@
  */
 
 export { Combobox } from './next/Combobox/Combobox';
+export { Option } from './next/Option/Option';
+export { OptGroup } from './next/Option/OptGroup';
 
 export { Dropdown } from './elements/Dropdown/Dropdown';
 export { Trigger } from './elements/Trigger/Trigger';

@@ -8,7 +8,7 @@
 import React from 'react';
 import { Story } from '@storybook/react';
 import { Col, Grid, Row } from '@zendeskgarden/react-grid';
-import { Combobox, IComboboxProps } from '@zendeskgarden/react-dropdowns';
+import { Combobox, IComboboxProps, OptGroup, Option } from '@zendeskgarden/react-dropdowns';
 
 interface IArgs extends IComboboxProps {}
 
@@ -16,7 +16,20 @@ export const ComboboxStory: Story<IArgs> = args => (
   <Grid>
     <Row justifyContent="center" style={{ height: 'calc(100vh - 80px)' }}>
       <Col alignSelf="center">
-        <Combobox {...args} />
+        <Combobox {...args}>
+          <OptGroup label="Test">
+            <Option value="foo">foo</Option>
+            <Option value="bar">bar</Option>
+          </OptGroup>
+          <OptGroup aria-label="check">
+            <Option isDisabled value="asparagus">
+              Asparagus
+            </Option>
+            <Option value="brussel sprouts" isDanger>
+              <span>Brussel sprouts</span>
+            </Option>
+          </OptGroup>
+        </Combobox>
       </Col>
     </Row>
   </Grid>
