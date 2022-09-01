@@ -12,6 +12,41 @@ _Note: Gaps between patch versions are faulty, broken or test releases._
 <!-- DO NOT MODIFY BELOW THIS COMMENT -->
 <!-- insert-new-changelog-here -->
 
+## v8.54.3 (2022-08-18)
+
+#### :bug: Bug Fix
+* `loaders`
+  * [#1400](https://github.com/zendeskgarden/react-components/pull/1400) fix(loaders): use text for inline loader label ([@Francois-Esquire](https://github.com/Francois-Esquire))
+
+## v8.54.2 (2022-08-11)
+
+#### :bug: Bug Fix
+* `forms`
+  * [#1399](https://github.com/zendeskgarden/react-components/pull/1399) fix(forms): prevent message and hint component from throwing outside of field component ([@Francois-Esquire](https://github.com/Francois-Esquire))
+* `tabs`
+  * [#1391](https://github.com/zendeskgarden/react-components/pull/1391) fix(tabs): add role when tab is disabled ([@Francois-Esquire](https://github.com/Francois-Esquire))
+
+
+## v8.54.1 (2022-08-04)
+
+#### :bug: Bug Fix
+* `forms`
+  * [#1389](https://github.com/zendeskgarden/react-components/pull/1389) fix(forms): add message id to input aria-describedby attribute ([@Francois-Esquire](https://github.com/Francois-Esquire))
+
+## v8.54.0 (2022-07-21)
+
+#### :rocket: New Feature
+* `dropdowns`, `forms`
+  * [#1381](https://github.com/zendeskgarden/react-components/pull/1381) feat(forms): add validation label to message component ([@Francois-Esquire](https://github.com/Francois-Esquire))
+
+#### :bug: Bug Fix
+* `dropdowns`
+  * [#1386](https://github.com/zendeskgarden/react-components/pull/1386) fix(dropdowns): prevent enter key from firing callbacks twice ([@Francois-Esquire](https://github.com/Francois-Esquire))
+
+#### :seedling: Internal
+* [#1387](https://github.com/zendeskgarden/react-components/pull/1387) chore(storybook): remove eslint from webpack config ([@Francois-Esquire](https://github.com/Francois-Esquire))
+* [#1388](https://github.com/zendeskgarden/react-components/pull/1388) chore(lint-staged): update jest to pass with no tests ([@Francois-Esquire](https://github.com/Francois-Esquire))
+
 ## v8.53.3 (2022-07-14)
 
 #### :bug: Bug Fix
