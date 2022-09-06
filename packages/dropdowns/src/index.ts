@@ -5,9 +5,11 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-export { Combobox } from './next/Combobox/Combobox';
-export { Option } from './next/Option/Option';
-export { OptGroup } from './next/Option/OptGroup';
+export { Combobox } from './_next/elements/Combobox';
+export { Option } from './_next/elements/Option';
+export { OptGroup } from './_next/elements/OptGroup';
+
+export type { IComboboxProps } from './_next/types';
 
 export { Dropdown } from './elements/Dropdown/Dropdown';
 export { Trigger } from './elements/Trigger/Trigger';
@@ -46,7 +48,6 @@ export type {
   GardenPlacement as GARDEN_PLACEMENT,
   PopperPlacement as POPPER_PLACEMENT
 } from './types';
-export type { IComboboxProps } from './next/types';
 export type { ILabelProps, IMessageProps } from '@zendeskgarden/react-forms';
 
 export { resetIdCounter } from 'downshift';

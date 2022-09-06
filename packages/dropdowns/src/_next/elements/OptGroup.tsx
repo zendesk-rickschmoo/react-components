@@ -30,7 +30,7 @@ export const OptGroup = forwardRef<HTMLLIElement, IOptGroupProps>(({ children, .
       ref={ref}
     >
       {label}
-      <hr />
+      <hr aria-hidden="true" />
       <ul aria-label={ariaLabel} role="group">
         {children}
       </ul>
