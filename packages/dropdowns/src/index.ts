@@ -5,16 +5,16 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-export { Combobox } from './_next/elements/Combobox';
+export { Combobox as ComboboxNext } from './_next/elements/Combobox';
 export { Option } from './_next/elements/Option';
 export { OptGroup } from './_next/elements/OptGroup';
 
-export type { IComboboxProps } from './_next/types';
+export type { IComboboxProps as IComboboxNextProps } from './_next/types';
 
 export { Dropdown } from './elements/Dropdown/Dropdown';
 export { Trigger } from './elements/Trigger/Trigger';
 export { Autocomplete } from './elements/Autocomplete/Autocomplete';
-// export { Combobox } from './elements/Combobox/Combobox';
+export { Combobox } from './elements/Combobox/Combobox';
 export { Multiselect } from './elements/Multiselect/Multiselect';
 export { Select } from './elements/Select/Select';
 export { Field } from './elements/Fields/Field';
@@ -39,7 +39,7 @@ export type {
   ITriggerProps,
   ISelectProps,
   IAutocompleteProps,
-  // IComboboxProps,
+  IComboboxProps,
   IMultiselectProps,
   IMenuProps,
   IItemProps,

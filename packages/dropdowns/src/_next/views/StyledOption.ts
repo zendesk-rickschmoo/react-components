@@ -11,7 +11,7 @@ import { DEFAULT_THEME, getColor, retrieveComponentStyles } from '@zendeskgarden
 
 const COMPONENT_ID = 'dropdowns.option';
 
-interface IStyledOptionProps {
+export interface IStyledOptionProps {
   isActive?: boolean;
   isCompact?: boolean;
   isDanger?: boolean;

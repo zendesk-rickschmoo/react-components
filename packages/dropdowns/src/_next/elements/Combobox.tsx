@@ -15,40 +15,60 @@ import React, {
   useMemo,
   useState
 } from 'react';
-import { useCombobox } from 'downshift';
+import { useCombobox, useMultipleSelection } from 'downshift';
 import { autoUpdate, flip, offset, size, useFloating } from '@floating-ui/react-dom';
 import mergeRefs from 'react-merge-refs';
 import { composeEventHandlers } from '@zendeskgarden/container-utilities';
 import { MediaInput } from '@zendeskgarden/react-forms';
-import { IComboboxProps, OptionValue } from '../types';
+import { IComboboxProps, IOptionProps, OptionValue } from '../types';
 import { StyledMenu } from '../views/StyledMenu';
 import { StyledListbox } from '../views/StyledListbox';
 import { ListboxContext } from '../context/useListboxContext';
+import {
+  StyledMultiselectInput,
+  StyledMultiselectItemsContainer,
+  StyledMultiselectItemWrapper
+} from '../../styled';
+import { Tag } from '@zendeskgarden/react-tags';
 
-const toValues = (children: ReactNode): OptionValue[] =>
-  Children.toArray(children).reduce((values: OptionValue[], option) => {
+interface IItem {
+  label: NonNullable<IOptionProps['label']>;
+}
+
+const toItems = (children: ReactNode) =>
+  Children.toArray(children).reduce((items: Record<OptionValue, IItem>, option) => {
+    let retVal = items;
+
     if (isValidElement(option)) {
       if (
         option.props.value !== undefined &&
         option.props.value !== null &&
         !option.props.isDisabled
       ) {
-        return values.concat(option.props.value);
-      }
+        retVal[option.props.value] = {
+          label: option.props.label || option.props.value
+        };
+      } else {
+        const groupItems = toItems(option.props.children);
 
-      return values.concat(toValues(option.props.children));
+        retVal = { ...items, ...groupItems };
+      }
     }
 
-    return values;
-  }, []);
+    return retVal;
+  }, {});
 
 /**
  * @extends HTMLAttributes<HTMLDivElement>
  */
 export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
   ({ children, isAutocomplete, onBlur, onClick, ...props }, ref) => {
-    const values = useMemo(() => toValues(children), [children]);
+    const items = useMemo(() => toItems(children), [children]);
+    const values = Object.keys(items);
     const [openChangeType, setOpenChangeType] = useState<string>();
+
+    const { getSelectedItemProps, getDropdownProps, addSelectedItem, removeSelectedItem } =
+      useMultipleSelection();
 
     const {
       getComboboxProps,
@@ -61,6 +81,7 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
     } = useCombobox<OptionValue>({
       isOpen: true,
       items: values,
+      itemToString: item => (item ? items[item].label : ''),
       onIsOpenChange: ({ type }) => setOpenChangeType(type)
     });
 
@@ -146,7 +167,17 @@ export const Combobox = forwardRef<HTMLDivElement, IComboboxProps>(
             ...props
           }}
           select={isAutocomplete && (isOpen ? 'open' : 'close')}
-        />
+        >
+          {/* <StyledMultiselectItemsContainer>
+            <StyledMultiselectItemWrapper>
+              <Tag size="large">
+                Test
+                <Tag.Close />
+              </Tag>
+            </StyledMultiselectItemWrapper>
+            <StyledMultiselectInput {...inputProps} />
+          </StyledMultiselectItemsContainer> */}
+        </MediaInput>
         <StyledMenu
           position={placement === 'bottom-start' ? 'bottom' : 'top'}
           isHidden={!isOpen}

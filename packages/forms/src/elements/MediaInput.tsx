@@ -21,6 +21,7 @@ import useFieldContext from '../utils/useFieldContext';
 export const MediaInput = React.forwardRef<HTMLInputElement, IMediaInputProps>(
   (
     {
+      children,
       start,
       end,
       disabled,
@@ -116,7 +117,7 @@ export const MediaInput = React.forwardRef<HTMLInputElement, IMediaInputProps>(
             {start}
           </FauxInput.StartIcon>
         )}
-        <StyledTextMediaInput {...(combinedProps as any)} />
+        {children || <StyledTextMediaInput {...(combinedProps as any)} />}
         {(select || end) && (
           <FauxInput.EndIcon
             isDisabled={disabled}

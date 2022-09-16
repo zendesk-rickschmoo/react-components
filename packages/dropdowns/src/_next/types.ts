@@ -10,11 +10,14 @@ import { HTMLAttributes, LiHTMLAttributes } from 'react';
 export interface IComboboxProps extends HTMLAttributes<HTMLDivElement> {
   /** Determines if this combobox behaves as an autocomplete */
   isAutocomplete?: boolean;
+  isMultiselect?: boolean;
 }
 
 export interface IOptionProps extends LiHTMLAttributes<HTMLLIElement> {
   /** Sets the value that is returned upon selection */
   value?: string;
+  /** Sets the text label of the option (defaults to `value`) */
+  label?: string;
   /** Indicates that the element is not interactive */
   isDisabled?: boolean;
   /** Applies danger styling */
