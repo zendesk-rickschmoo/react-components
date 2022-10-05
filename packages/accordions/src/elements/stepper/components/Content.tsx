@@ -5,9 +5,18 @@
  * found at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-import React, { forwardRef, useRef, useCallback, useEffect, HTMLAttributes } from 'react';
+import React, {
+  forwardRef,
+  useRef,
+  useCallback,
+  useEffect,
+  useContext,
+  HTMLAttributes
+} from 'react';
 import mergeRefs from 'react-merge-refs';
 import debounce from 'lodash.debounce';
+import { ThemeContext } from 'styled-components';
+import { useDocument } from '@zendeskgarden/react-theming';
 import { StyledContent, StyledInnerContent } from '../../../styled';
 import { useStepContext, useStepperContext } from '../../../utils';
 
@@ -17,6 +26,9 @@ const ContentComponent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElemen
     const { activeIndex, isHorizontal } = useStepperContext();
     const { currentStepIndex } = useStepContext();
     const isActive = currentStepIndex === activeIndex;
+
+    const theme = useContext(ThemeContext);
+    const environment = useDocument(theme);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const updateMaxHeight = useCallback(
@@ -31,17 +43,18 @@ const ContentComponent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElemen
     );
 
     useEffect(() => {
-      if (isActive && isHorizontal === false) {
-        addEventListener('resize', updateMaxHeight);
+      if (environment && isActive && isHorizontal === false) {
+        environment.defaultView!.addEventListener('resize', updateMaxHeight);
         updateMaxHeight();
 
         return () => {
-          removeEventListener('resize', updateMaxHeight);
+          updateMaxHeight.cancel();
+          environment.defaultView!.removeEventListener('resize', updateMaxHeight);
         };
       }
 
       return undefined;
-    }, [isActive, isHorizontal, props.children, updateMaxHeight]);
+    }, [environment, isActive, isHorizontal, updateMaxHeight]);
 
     return isHorizontal === false ? (
       <StyledContent ref={mergeRefs([contentRef, ref])} isActive={isActive} {...props}>
